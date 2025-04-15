@@ -1,53 +1,9 @@
 package main
 
-import (
-	"context"
-	"errors"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-	"todo_list_go/internal/config"
-	"todo_list_go/internal/handlers"
-	"todo_list_go/internal/server"
-	"todo_list_go/pkg/logger"
-)
+import "todo_list_go/internal/app"
 
-const configDir = "configs"
+const configsDir = "configs"
 
 func main() {
-	cfg, err := config.Init(configDir)
-	if err != nil {
-		logger.Error(err.Error())
-
-		return
-	}
-
-	handler := handlers.NewHandler()
-	srv := server.NewServer(cfg, handler.Init())
-
-	go func() {
-		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
-			logger.Errorf("error occurred while running http server: %s\n", err.Error())
-		}
-	}()
-
-	logger.Info("Server started")
-
-	// Graceful Shutdown
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-
-	<-quit
-
-	const timeout = 5 * time.Second
-
-	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
-	defer shutdown()
-
-	if err := srv.Stop(ctx); err != nil {
-		logger.Errorf("failed to stop server: %v", err)
-	}
-
+	app.Run(configsDir)
 }

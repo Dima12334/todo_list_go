@@ -4,12 +4,13 @@ import "go.uber.org/zap"
 
 func Init() error {
 	var err error
-	logger, err := zap.NewDevelopment()
+	baseLogger, err := zap.NewDevelopment()
 
 	if err != nil {
 		return err
 	}
 
+	logger := baseLogger.WithOptions(zap.AddCallerSkip(1))
 	zap.ReplaceGlobals(logger)
 
 	return err
