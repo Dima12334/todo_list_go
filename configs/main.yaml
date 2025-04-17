@@ -3,5 +3,4 @@ http_server:
   port: 8080
 
 auth:
-  accessTokenTTL: 24h
-  refreshTokenTTL: 240h #10 days
+  accessTokenTTL: 168h # 7 days

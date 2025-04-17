@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	v1 "todo_list_go/internal/handlers/v1"
+	api_v1 "todo_list_go/internal/handlers/v1"
 	"todo_list_go/internal/service"
 )
 
@@ -31,9 +31,9 @@ func (h *Handler) Init() *gin.Engine {
 }
 
 func (h *Handler) initApi(router *gin.Engine) {
-	handlerV1 := v1.NewHandler()
+	handlerAPIV1 := api_v1.NewHandler()
 	api := router.Group("/api")
 	{
-		handlerV1.Init(api)
+		handlerAPIV1.Init(api)
 	}
 }

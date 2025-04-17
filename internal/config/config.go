@@ -7,9 +7,8 @@ import (
 )
 
 const (
-	defaultHTTPPort        = "8080"
-	defaultAccessTokenTTL  = 24 * time.Hour
-	defaultRefreshTokenTTL = 24 * time.Hour * 30
+	defaultHTTPPort       = "8080"
+	defaultAccessTokenTTL = 7 * 24 * time.Hour // 1 week
 )
 
 type (
@@ -93,5 +92,4 @@ func setFormEnv(cfg *Config) {
 func populateDefaults() {
 	viper.SetDefault("http_server.port", defaultHTTPPort)
 	viper.SetDefault("auth.accessTokenTTL", defaultAccessTokenTTL)
-	viper.SetDefault("auth.refreshTokenTTL", defaultRefreshTokenTTL)
 }
