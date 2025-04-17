@@ -11,7 +11,9 @@ import (
 	"time"
 	"todo_list_go/internal/config"
 	"todo_list_go/internal/handlers"
+	"todo_list_go/internal/repository"
 	"todo_list_go/internal/server"
+	"todo_list_go/internal/service"
 	"todo_list_go/pkg/logger"
 )
 
@@ -26,7 +28,15 @@ func Run(configDir string) {
 		return
 	}
 
-	handler := handlers.NewHandler()
+	repositories := repository.NewRepositories(nil)
+	services := service.NewServices(
+		service.Deps{
+			Repos:          repositories,
+			AccessTokenTTL: cfg.Auth.JWT.AccessTokenTTL,
+		},
+	)
+	handler := handlers.NewHandler(services)
+
 	srv := server.NewServer(cfg, handler.Init())
 
 	go func() {

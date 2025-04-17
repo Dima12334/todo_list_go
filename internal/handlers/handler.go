@@ -4,13 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	v1 "todo_list_go/internal/handlers/v1"
+	"todo_list_go/internal/service"
 )
 
 type Handler struct {
+	services *service.Services
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(services *service.Services) *Handler {
+	return &Handler{services: services}
 }
 
 func (h *Handler) Init() *gin.Engine {

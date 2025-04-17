@@ -33,9 +33,8 @@ type (
 	}
 
 	JWTConfig struct {
-		AccessTokenTTL  time.Duration `mapstructure:"accessTokenTTL"`
-		RefreshTokenTTL time.Duration `mapstructure:"refreshTokenTTL"`
-		SigningKey      string
+		AccessTokenTTL time.Duration `mapstructure:"accessTokenTTL"`
+		SigningKey     string
 	}
 
 	AuthConfig struct {
