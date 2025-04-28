@@ -1,7 +1,10 @@
 package config
 
 import (
+	"fmt"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"time"
 )
@@ -9,6 +12,7 @@ import (
 const (
 	defaultHTTPPort       = "8080"
 	defaultAccessTokenTTL = 7 * 24 * time.Hour // 1 week
+	defaultMigrationsPath = "file://migrations"
 )
 
 type (
@@ -24,11 +28,14 @@ type (
 	}
 
 	DatabaseConfig struct {
-		Host     string
-		Port     string
-		User     string
-		Password string
-		DBName   string
+		Host           string
+		Port           string
+		User           string
+		Password       string
+		DBName         string
+		SSLMode        string
+		DSN            string
+		MigrationsPath string `mapstructure:"migrationsPath"`
 	}
 
 	JWTConfig struct {
@@ -55,6 +62,16 @@ func Init(configDir string) (*Config, error) {
 
 	setFormEnv(&cfg)
 
+	cfg.DB.DSN = fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		cfg.DB.User,
+		cfg.DB.Password,
+		cfg.DB.Host,
+		cfg.DB.Port,
+		cfg.DB.DBName,
+		cfg.DB.SSLMode,
+	)
+
 	return &cfg, nil
 }
 
@@ -63,6 +80,9 @@ func unmarshalConfig(cfg *Config) error {
 		return err
 	}
 	if err := viper.UnmarshalKey("auth", &cfg.Auth); err != nil {
+		return err
+	}
+	if err := viper.UnmarshalKey("db", &cfg.DB); err != nil {
 		return err
 	}
 	return nil
@@ -80,11 +100,17 @@ func parseConfigFile(configDir string) error {
 }
 
 func setFormEnv(cfg *Config) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("error loading .env file")
+	}
+
 	cfg.DB.Host = os.Getenv("DB_HOST")
 	cfg.DB.Port = os.Getenv("DB_PORT")
 	cfg.DB.User = os.Getenv("DB_USER")
 	cfg.DB.Password = os.Getenv("DB_PASSWORD")
 	cfg.DB.DBName = os.Getenv("DB_NAME")
+	cfg.DB.SSLMode = os.Getenv("DB_SSLMODE")
 
 	cfg.Auth.JWT.SigningKey = os.Getenv("SIGNING_KEY")
 }
@@ -92,4 +118,5 @@ func setFormEnv(cfg *Config) {
 func populateDefaults() {
 	viper.SetDefault("http_server.port", defaultHTTPPort)
 	viper.SetDefault("auth.accessTokenTTL", defaultAccessTokenTTL)
+	viper.SetDefault("db.migrationsPath", defaultMigrationsPath)
 }

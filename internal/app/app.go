@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 	"todo_list_go/internal/config"
+	"todo_list_go/internal/db"
 	"todo_list_go/internal/handlers"
 	"todo_list_go/internal/repository"
 	"todo_list_go/internal/server"
@@ -24,11 +25,24 @@ func Run(configDir string) {
 
 	cfg, err := config.Init(configDir)
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Errorf("failed to init configs: %v", err.Error())
 		return
 	}
 
-	repositories := repository.NewRepositories(nil)
+	dbConn, err := db.ConnectDB(cfg.DB)
+	if err != nil {
+		logger.Errorf("failed to connect to database: %v", err.Error())
+		return
+	}
+	defer func() {
+		if err := dbConn.Close(); err != nil {
+			logger.Errorf("error occurred on db connection close: %s", err.Error())
+		} else {
+			logger.Info("db connection closed successfully")
+		}
+	}()
+
+	repositories := repository.NewRepositories(dbConn)
 	services := service.NewServices(
 		service.Deps{
 			Repos:          repositories,
@@ -44,7 +58,7 @@ func Run(configDir string) {
 			logger.Errorf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
-	logger.Info("Server started")
+	logger.Info("server started")
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
@@ -57,6 +71,8 @@ func Run(configDir string) {
 	defer shutdown()
 
 	if err := srv.Stop(ctx); err != nil {
-		logger.Errorf("failed to stop server: %v", err)
+		logger.Errorf("failed to stop server: %v", err.Error())
+	} else {
+		logger.Info("server stopped successfully")
 	}
 }

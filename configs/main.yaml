@@ -4,3 +4,6 @@ http_server:
 
 auth:
   accessTokenTTL: 168h # 7 days
+
+db:
+  migrationsPath: "file://migrations"
