@@ -3,11 +3,11 @@ package models
 import "time"
 
 type User struct {
-	ID        int       `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	Password  string    `json:"password"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
+	ID        string    `json:"id" db:"id"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	Password  string    `json:"password" db:"password"`
+	Name      string    `json:"name" db:"name"`
+	Email     string    `json:"email" db:"email"`
 }
 
 type UpdateUserInput struct {

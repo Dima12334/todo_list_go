@@ -5,6 +5,8 @@ import (
 	"time"
 	"todo_list_go/internal/models"
 	"todo_list_go/internal/repository"
+	"todo_list_go/pkg/auth"
+	"todo_list_go/pkg/hash"
 )
 
 type SignUpUserInput struct {
@@ -76,6 +78,8 @@ type Category interface {
 type Deps struct {
 	Repos          *repository.Repositories
 	AccessTokenTTL time.Duration
+	TokenManager   auth.TokenManager
+	Hasher         hash.PasswordHasher
 }
 
 type Services struct {
@@ -86,7 +90,7 @@ type Services struct {
 
 func NewServices(deps Deps) *Services {
 	return &Services{
-		Users:      NewUserService(deps.Repos.User, deps.AccessTokenTTL),
+		Users:      NewUserService(deps.Repos.User, deps.AccessTokenTTL, deps.TokenManager, deps.Hasher),
 		Tasks:      NewTaskService(deps.Repos.Task),
 		Categories: NewCategoryService(deps.Repos.Category),
 	}

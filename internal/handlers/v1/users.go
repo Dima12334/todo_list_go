@@ -26,6 +26,15 @@ type signUpUserInput struct {
 	Password string `json:"password" binding:"required,min=8,max=255"`
 }
 
+type signInUserInput struct {
+	Email    string `json:"email" binding:"required,email,max=255"`
+	Password string `json:"password" binding:"required,min=8,max=255"`
+}
+
+type tokenResponse struct {
+	AccessToken string `json:"accessToken"`
+}
+
 func (h *Handler) signUp(c *gin.Context) {
 	var inp signUpUserInput
 
@@ -56,11 +65,38 @@ func (h *Handler) signUp(c *gin.Context) {
 	}
 
 	c.Status(http.StatusCreated)
-	return
 }
 
 func (h *Handler) signIn(c *gin.Context) {
+	var inp signInUserInput
+	if err := c.BindJSON(&inp); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make(map[string]string)
+			for _, fe := range ve {
+				field := strings.ToLower(fe.Field())
+				out[field] = customErrors.ValidationErrorToText(fe)
+			}
+			newErrorsResponse(c, http.StatusBadRequest, out)
+			return
+		}
 
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accessToken, err := h.services.Users.SignIn(c, service.SignInUserInput(inp))
+	if err != nil {
+		if errors.Is(err, customErrors.ErrUserNotFound) {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, tokenResponse{accessToken})
 }
 
 func (h *Handler) getMe(c *gin.Context) {

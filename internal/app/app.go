@@ -15,6 +15,8 @@ import (
 	"todo_list_go/internal/repository"
 	"todo_list_go/internal/server"
 	"todo_list_go/internal/service"
+	"todo_list_go/pkg/auth"
+	"todo_list_go/pkg/hash"
 	"todo_list_go/pkg/logger"
 )
 
@@ -42,11 +44,21 @@ func Run(configDir string) {
 		}
 	}()
 
+	tokenManager, err := auth.NewManager(cfg.Auth.JWT.SigningKey)
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
+
+	hasher := hash.NewSHA1Hasher()
+
 	repositories := repository.NewRepositories(dbConn)
 	services := service.NewServices(
 		service.Deps{
 			Repos:          repositories,
 			AccessTokenTTL: cfg.Auth.JWT.AccessTokenTTL,
+			TokenManager:   tokenManager,
+			Hasher:         hasher,
 		},
 	)
 	handler := handlers.NewHandler(services)
