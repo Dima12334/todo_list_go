@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"net/http"
 	"strings"
+	"time"
 	"todo_list_go/internal/service"
 	customErrors "todo_list_go/pkg/errors"
 )
@@ -15,8 +16,11 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	{
 		users.POST("sign-up", h.signUp)
 		users.POST("sign-in", h.signIn)
-		users.GET("me", h.getMe)
-		users.PUT("me", h.updateMe)
+		authenticated := users.Group("/", h.userIdentity)
+		{
+			authenticated.GET("me", h.getMe)
+			authenticated.PUT("me", h.updateMe)
+		}
 	}
 }
 
@@ -33,6 +37,13 @@ type signInUserInput struct {
 
 type tokenResponse struct {
 	AccessToken string `json:"accessToken"`
+}
+
+type userMeResponse struct {
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
 }
 
 func (h *Handler) signUp(c *gin.Context) {
@@ -100,7 +111,28 @@ func (h *Handler) signIn(c *gin.Context) {
 }
 
 func (h *Handler) getMe(c *gin.Context) {
+	userID, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	user, err := h.services.Users.GetByID(c, userID)
+	if err != nil {
+		if errors.Is(err, customErrors.ErrUserNotFound) {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
 
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, userMeResponse{
+		ID:        user.ID,
+		CreatedAt: user.CreatedAt,
+		Name:      user.Name,
+		Email:     user.Email,
+	})
 }
 
 func (h *Handler) updateMe(c *gin.Context) {

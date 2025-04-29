@@ -3,16 +3,18 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	api_v1 "todo_list_go/internal/handlers/v1"
+	apiV1 "todo_list_go/internal/handlers/v1"
 	"todo_list_go/internal/service"
+	"todo_list_go/pkg/auth"
 )
 
 type Handler struct {
-	services *service.Services
+	services     *service.Services
+	tokenManager auth.TokenManager
 }
 
-func NewHandler(services *service.Services) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *service.Services, tokenManager auth.TokenManager) *Handler {
+	return &Handler{services: services, tokenManager: tokenManager}
 }
 
 func (h *Handler) Init() *gin.Engine {
@@ -31,7 +33,7 @@ func (h *Handler) Init() *gin.Engine {
 }
 
 func (h *Handler) initApi(router *gin.Engine) {
-	handlerAPIV1 := api_v1.NewHandler(h.services)
+	handlerAPIV1 := apiV1.NewHandler(h.services, h.tokenManager)
 	api := router.Group("/api")
 	{
 		handlerAPIV1.Init(api)

@@ -68,6 +68,10 @@ func (s *UserService) SignIn(ctx context.Context, inp SignInUserInput) (string, 
 	return accessToken, nil
 }
 
-func (s *UserService) Update(ctx context.Context, inp UpdateUserInput) (*models.User, error) {
-	return nil, nil
+func (s *UserService) GetByID(ctx context.Context, userID string) (models.User, error) {
+	return s.repo.GetByID(ctx, userID)
+}
+
+func (s *UserService) Update(ctx context.Context, inp UpdateUserInput) (models.User, error) {
+	return models.User{}, nil
 }

@@ -3,7 +3,8 @@ http_server:
   port: 8080
 
 auth:
-  accessTokenTTL: 168h # 7 days
+  jwt:
+    accessTokenTTL: 168h # 7 days
 
 db:
   migrationsPath: "file://migrations"

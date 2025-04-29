@@ -28,7 +28,8 @@ type UpdateUserInput struct {
 type User interface {
 	SignUp(ctx context.Context, inp SignUpUserInput) error
 	SignIn(ctx context.Context, inp SignInUserInput) (string, error)
-	Update(ctx context.Context, inp UpdateUserInput) (*models.User, error)
+	GetByID(ctx context.Context, userID string) (models.User, error)
+	Update(ctx context.Context, inp UpdateUserInput) (models.User, error)
 }
 
 type CreateTaskInput struct {
@@ -48,11 +49,11 @@ type UpdateTaskInput struct {
 }
 
 type Task interface {
-	Create(ctx context.Context, inp CreateTaskInput) (*models.Task, error)
-	Update(ctx context.Context, inp UpdateTaskInput) (*models.Task, error)
+	Create(ctx context.Context, inp CreateTaskInput) (models.Task, error)
+	Update(ctx context.Context, inp UpdateTaskInput) (models.Task, error)
 	Delete(ctx context.Context, TaskID, UserID string) error
-	GetByID(ctx context.Context, TaskID, UserID string) (*models.Task, error)
-	GetList(ctx context.Context, userID string, categoryIDs []string) ([]*models.Task, error)
+	GetByID(ctx context.Context, TaskID, UserID string) (models.Task, error)
+	GetList(ctx context.Context, userID string, categoryIDs []string) ([]models.Task, error)
 }
 
 type CreateCategoryInput struct {
@@ -69,10 +70,10 @@ type UpdateCategoryInput struct {
 }
 
 type Category interface {
-	Create(ctx context.Context, inp CreateCategoryInput) (*models.Category, error)
-	Update(ctx context.Context, inp UpdateCategoryInput) (*models.Category, error)
+	Create(ctx context.Context, inp CreateCategoryInput) (models.Category, error)
+	Update(ctx context.Context, inp UpdateCategoryInput) (models.Category, error)
 	Delete(ctx context.Context, CategoryID, UserID string) error
-	GetList(ctx context.Context, userID string) ([]*models.Category, error)
+	GetList(ctx context.Context, userID string) ([]models.Category, error)
 }
 
 type Deps struct {

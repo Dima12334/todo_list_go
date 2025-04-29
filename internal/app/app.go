@@ -61,7 +61,7 @@ func Run(configDir string) {
 			Hasher:         hasher,
 		},
 	)
-	handler := handlers.NewHandler(services)
+	handler := handlers.NewHandler(services, tokenManager)
 
 	srv := server.NewServer(cfg, handler.Init())
 
