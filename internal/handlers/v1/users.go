@@ -110,7 +110,7 @@ func (h *Handler) signIn(c *gin.Context) {
 }
 
 func (h *Handler) getMe(c *gin.Context) {
-	userID, err := getUserId(c)
+	userID, err := getUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

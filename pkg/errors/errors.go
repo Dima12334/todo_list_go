@@ -14,6 +14,7 @@ var (
 	ErrUserAlreadyExists     = errors.New("user with such email already exists")
 	ErrTaskAlreadyExists     = errors.New("task with such title already exists")
 	ErrCategoryAlreadyExists = errors.New("category with such title already exists")
+	ErrNoUpdateFields        = errors.New("no fields specified for update")
 )
 
 func IsDuplicateKeyError(err error) bool {
@@ -34,6 +35,8 @@ func ValidationErrorToText(fe validator.FieldError) string {
 		return fmt.Sprintf("must be at least %s characters", fe.Param())
 	case "max":
 		return fmt.Sprintf("must be at most %s characters", fe.Param())
+	case "oneof":
+		return fmt.Sprintf("must be one of: %s", fe.Param())
 	default:
 		return "is not valid"
 	}

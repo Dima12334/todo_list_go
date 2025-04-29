@@ -2,7 +2,9 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 	"strings"
 )
@@ -10,6 +12,7 @@ import (
 const (
 	authorizationHeader = "Authorization"
 	userCtx             = "userId"
+	idParamCtx          = "id"
 )
 
 func (h *Handler) parseAuthHeader(c *gin.Context) (string, error) {
@@ -35,7 +38,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 	c.Set(userCtx, userID)
 }
 
-func getUserId(c *gin.Context) (string, error) {
+func getUserID(c *gin.Context) (string, error) {
 	userID, ok := c.Get(userCtx)
 	if !ok {
 		return "", errors.New("user id not found")
@@ -47,4 +50,19 @@ func getUserId(c *gin.Context) (string, error) {
 	}
 
 	return id, nil
+}
+
+func validateIDParam(c *gin.Context) {
+	for _, param := range c.Params {
+		if strings.Contains(param.Key, idParamCtx) {
+			if _, err := uuid.Parse(param.Value); err != nil {
+				newErrorResponse(
+					c,
+					http.StatusBadRequest,
+					fmt.Sprintf("invalid UUID format for url parameter %s", param.Key),
+				)
+			}
+		}
+		c.Next()
+	}
 }

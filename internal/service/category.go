@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"time"
 	"todo_list_go/internal/models"
 	"todo_list_go/internal/repository"
+	customErrors "todo_list_go/pkg/errors"
 )
 
 type CategoryService struct {
@@ -17,6 +19,7 @@ func NewCategoryService(repo repository.CategoryRepository) *CategoryService {
 func (s *CategoryService) Create(ctx context.Context, inp CreateCategoryInput) (models.Category, error) {
 	category := models.Category{
 		UserID:      inp.UserID,
+		CreatedAt:   time.Now(),
 		Title:       inp.Title,
 		Description: inp.Description,
 		Color:       inp.Color,
@@ -32,6 +35,10 @@ func (s *CategoryService) Update(ctx context.Context, inp UpdateCategoryInput) (
 	_, err := s.repo.GetByID(ctx, inp.ID, inp.UserID)
 	if err != nil {
 		return models.Category{}, err
+	}
+
+	if inp.Title == nil && inp.Description == nil && inp.Color == nil {
+		return models.Category{}, customErrors.ErrNoUpdateFields
 	}
 
 	updateInput := repository.UpdateCategoryInput{

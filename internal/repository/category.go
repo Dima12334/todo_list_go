@@ -63,8 +63,8 @@ func (r *CategoryRepo) Update(ctx context.Context, inp UpdateCategoryInput) (mod
 
 	setQuery := strings.Join(setClause, ", ")
 	query := fmt.Sprintf(
-		`UPDATE categories SET %s WHERE id = $%d
-			RETURNING id, user_id, created_at, title, description, color;`,
+		`UPDATE categories SET %s WHERE id = $%d 
+                RETURNING id, user_id, created_at, title, description, color;`,
 		setQuery, argID,
 	)
 	args = append(args, inp.ID)
@@ -90,10 +90,10 @@ func (r *CategoryRepo) DeleteByID(ctx context.Context, id string) error {
 }
 
 func (r *CategoryRepo) GetListByUserID(ctx context.Context, userID string) ([]models.Category, error) {
-	var categories []models.Category
+	categories := make([]models.Category, 0)
 
 	query := fmt.Sprintf(
-		"SELECT id, created_at, title, description, color FROM categories WHERE user_id=$1",
+		"SELECT id, created_at, title, description, color FROM categories WHERE user_id=$1;",
 	)
 	err := r.db.SelectContext(ctx, &categories, query, userID)
 
@@ -104,7 +104,7 @@ func (r *CategoryRepo) GetByID(ctx context.Context, categoryID, userID string) (
 	var category models.Category
 
 	query := fmt.Sprintf(
-		"SELECT id, created_at, title, description, color FROM categories WHERE id=$1 AND user_id=$2",
+		"SELECT id, created_at, title, description, color FROM categories WHERE id=$1 AND user_id=$2;",
 	)
 	err := r.db.GetContext(ctx, &category, query, categoryID, userID)
 	if err != nil {
