@@ -32,7 +32,7 @@ func (r *UserRepo) Create(ctx context.Context, user models.User) error {
 func (r *UserRepo) GetByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
 	query := "SELECT id, created_at, name, email FROM users WHERE id = $1;"
-	if err := r.db.Get(&user, query, id); err != nil {
+	if err := r.db.GetContext(ctx, &user, query, id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.User{}, customErrors.ErrUserNotFound
 		}
@@ -46,7 +46,7 @@ func (r *UserRepo) GetByID(ctx context.Context, id string) (models.User, error) 
 func (r *UserRepo) GetByEmail(ctx context.Context, email string) (models.User, error) {
 	var user models.User
 	query := "SELECT id, created_at, name, email, password FROM users WHERE email = $1;"
-	if err := r.db.Get(&user, query, email); err != nil {
+	if err := r.db.GetContext(ctx, &user, query, email); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.User{}, customErrors.ErrUserNotFound
 		}

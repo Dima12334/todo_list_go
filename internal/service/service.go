@@ -58,15 +58,17 @@ type CreateCategoryInput struct {
 }
 
 type UpdateCategoryInput struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Color       string `json:"color"`
+	ID          string  `json:"id"`
+	UserID      string  `json:"user_id"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Color       *string `json:"color"`
 }
 
 type Category interface {
 	Create(ctx context.Context, inp CreateCategoryInput) (models.Category, error)
 	Update(ctx context.Context, inp UpdateCategoryInput) (models.Category, error)
-	Delete(ctx context.Context, CategoryID, UserID string) error
+	Delete(ctx context.Context, categoryID, userID string) error
 	GetList(ctx context.Context, userID string) ([]models.Category, error)
 }
 

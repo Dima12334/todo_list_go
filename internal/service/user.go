@@ -39,11 +39,8 @@ func (s *UserService) SignUp(ctx context.Context, inp SignUpUserInput) error {
 		CreatedAt: time.Now(),
 	}
 
-	if err = s.repo.Create(ctx, user); err != nil {
-		return err
-	}
-
-	return nil
+	err = s.repo.Create(ctx, user)
+	return err
 }
 
 func (s *UserService) SignIn(ctx context.Context, inp SignInUserInput) (string, error) {

@@ -21,11 +21,18 @@ type TaskRepository interface {
 	GetListByCategoryIDs(ctx context.Context, categoryIDs []string) ([]models.Task, error)
 }
 
+type UpdateCategoryInput struct {
+	ID          string  `json:"id"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Color       *string `json:"color"`
+}
+
 type CategoryRepository interface {
 	Create(ctx context.Context, category models.Category) (models.Category, error)
-	Update(ctx context.Context, inp models.UpdateCategoryInput) (models.Category, error)
+	Update(ctx context.Context, inp UpdateCategoryInput) (models.Category, error)
 	DeleteByID(ctx context.Context, id string) error
-	GetByID(ctx context.Context, id string) (models.Category, error)
+	GetByID(ctx context.Context, categoryID, userID string) (models.Category, error)
 	GetListByUserID(ctx context.Context, userID string) ([]models.Category, error)
 }
 

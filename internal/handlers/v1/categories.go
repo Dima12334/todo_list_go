@@ -5,6 +5,7 @@ import "github.com/gin-gonic/gin"
 func (h *Handler) initCategoriesRoutes(api *gin.RouterGroup) {
 	categories := api.Group("/categories")
 	{
+		categories.Use(h.userIdentity)
 		categories.GET("", h.getAllCategories)
 		categories.POST("", h.createCategory)
 		categories.PUT("/:id", h.updateCategory)

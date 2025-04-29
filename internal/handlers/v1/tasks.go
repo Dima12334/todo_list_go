@@ -5,6 +5,7 @@ import "github.com/gin-gonic/gin"
 func (h *Handler) initTasksRoutes(api *gin.RouterGroup) {
 	tasks := api.Group("/tasks")
 	{
+		tasks.Use(h.userIdentity)
 		tasks.GET("", h.getAllTasks)
 		tasks.POST("", h.createTask)
 		tasks.GET("/:id", h.getTaskById)
