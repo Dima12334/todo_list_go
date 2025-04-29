@@ -19,7 +19,6 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 		authenticated := users.Group("/", h.userIdentity)
 		{
 			authenticated.GET("me", h.getMe)
-			authenticated.PUT("me", h.updateMe)
 		}
 	}
 }
@@ -133,8 +132,4 @@ func (h *Handler) getMe(c *gin.Context) {
 		Name:      user.Name,
 		Email:     user.Email,
 	})
-}
-
-func (h *Handler) updateMe(c *gin.Context) {
-
 }

@@ -29,10 +29,6 @@ func (r *UserRepo) Create(ctx context.Context, user models.User) error {
 	return nil
 }
 
-func (r *UserRepo) Update(ctx context.Context, inp models.UpdateUserInput) (models.User, error) {
-	return models.User{}, nil
-}
-
 func (r *UserRepo) GetByID(ctx context.Context, id string) (models.User, error) {
 	var user models.User
 	query := "SELECT id, created_at, name, email FROM users WHERE id = $1;"

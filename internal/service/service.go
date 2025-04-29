@@ -20,16 +20,10 @@ type SignInUserInput struct {
 	Password string
 }
 
-type UpdateUserInput struct {
-	UserID string `json:"user_id"`
-	Name   string `json:"name"`
-}
-
 type User interface {
 	SignUp(ctx context.Context, inp SignUpUserInput) error
 	SignIn(ctx context.Context, inp SignInUserInput) (string, error)
 	GetByID(ctx context.Context, userID string) (models.User, error)
-	Update(ctx context.Context, inp UpdateUserInput) (models.User, error)
 }
 
 type CreateTaskInput struct {
