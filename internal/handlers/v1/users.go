@@ -3,9 +3,7 @@ package v1
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"net/http"
-	"strings"
 	"time"
 	"todo_list_go/internal/service"
 	customErrors "todo_list_go/pkg/errors"
@@ -49,13 +47,8 @@ func (h *Handler) signUp(c *gin.Context) {
 	var inp signUpUserInput
 
 	if err := c.BindJSON(&inp); err != nil {
-		var ve validator.ValidationErrors
-		if errors.As(err, &ve) {
-			out := make(map[string]string)
-			for _, fe := range ve {
-				field := strings.ToLower(fe.Field())
-				out[field] = customErrors.ValidationErrorToText(fe)
-			}
+		out := customErrors.FormatValidationErrorOutput(err)
+		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
 		}
@@ -80,13 +73,8 @@ func (h *Handler) signUp(c *gin.Context) {
 func (h *Handler) signIn(c *gin.Context) {
 	var inp signInUserInput
 	if err := c.BindJSON(&inp); err != nil {
-		var ve validator.ValidationErrors
-		if errors.As(err, &ve) {
-			out := make(map[string]string)
-			for _, fe := range ve {
-				field := strings.ToLower(fe.Field())
-				out[field] = customErrors.ValidationErrorToText(fe)
-			}
+		out := customErrors.FormatValidationErrorOutput(err)
+		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
 		}

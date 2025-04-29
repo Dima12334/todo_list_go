@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/lib/pq"
+	"strings"
 )
 
 var (
@@ -23,6 +24,19 @@ func IsDuplicateKeyError(err error) bool {
 		return pqErr.Code == "23505" // Unique violation code
 	}
 	return false
+}
+
+func FormatValidationErrorOutput(err error) map[string]string {
+	var ve validator.ValidationErrors
+	if errors.As(err, &ve) {
+		out := make(map[string]string)
+		for _, fe := range ve {
+			field := strings.ToLower(fe.Field())
+			out[field] = ValidationErrorToText(fe)
+		}
+		return out
+	}
+	return nil
 }
 
 func ValidationErrorToText(fe validator.FieldError) string {

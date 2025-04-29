@@ -3,9 +3,7 @@ package v1
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"net/http"
-	"strings"
 	"time"
 	"todo_list_go/internal/service"
 	customErrors "todo_list_go/pkg/errors"
@@ -73,13 +71,8 @@ func (h *Handler) createCategory(c *gin.Context) {
 	var inp createCategoryInput
 
 	if err := c.BindJSON(&inp); err != nil {
-		var ve validator.ValidationErrors
-		if errors.As(err, &ve) {
-			out := make(map[string]string)
-			for _, fe := range ve {
-				field := strings.ToLower(fe.Field())
-				out[field] = customErrors.ValidationErrorToText(fe)
-			}
+		out := customErrors.FormatValidationErrorOutput(err)
+		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
 		}
@@ -131,13 +124,8 @@ func (h *Handler) updateCategory(c *gin.Context) {
 
 	var inp updateCategoryInput
 	if err := c.BindJSON(&inp); err != nil {
-		var ve validator.ValidationErrors
-		if errors.As(err, &ve) {
-			out := make(map[string]string)
-			for _, fe := range ve {
-				field := strings.ToLower(fe.Field())
-				out[field] = customErrors.ValidationErrorToText(fe)
-			}
+		out := customErrors.FormatValidationErrorOutput(err)
+		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
 		}
@@ -156,20 +144,16 @@ func (h *Handler) updateCategory(c *gin.Context) {
 		},
 	)
 	if err != nil {
-		if errors.Is(err, customErrors.ErrCategoryNotFound) {
+		switch {
+		case errors.Is(err, customErrors.ErrCategoryNotFound):
 			newErrorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-		if errors.Is(err, customErrors.ErrCategoryAlreadyExists) {
+		case errors.Is(err, customErrors.ErrCategoryAlreadyExists):
 			newErrorResponse(c, http.StatusConflict, err.Error())
-			return
-		}
-		if errors.Is(err, customErrors.ErrNoUpdateFields) {
+		case errors.Is(err, customErrors.ErrNoUpdateFields):
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
-			return
+		default:
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		}
-
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
