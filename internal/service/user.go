@@ -5,6 +5,7 @@ import (
 	"time"
 	"todo_list_go/internal/models"
 	"todo_list_go/internal/repository"
+	"todo_list_go/pkg/hash"
 )
 
 type UserService struct {
@@ -20,6 +21,22 @@ func NewUserService(repo repository.UserRepository, accessTokenTTL time.Duration
 }
 
 func (s *UserService) SignUp(ctx context.Context, inp SignUpUserInput) error {
+	passwordHash, err := hash.GeneratePasswordHash(inp.Password)
+	if err != nil {
+		return err
+	}
+
+	user := models.User{
+		Name:      inp.Name,
+		Password:  passwordHash,
+		Email:     inp.Email,
+		CreatedAt: time.Now(),
+	}
+
+	if err = s.repo.Create(ctx, user); err != nil {
+		return err
+	}
+
 	return nil
 }
 

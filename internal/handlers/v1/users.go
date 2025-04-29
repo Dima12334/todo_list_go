@@ -1,9 +1,13 @@
 package v1
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"net/http"
+	"strings"
 	"todo_list_go/internal/service"
+	customErrors "todo_list_go/pkg/errors"
 )
 
 func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
@@ -26,16 +30,33 @@ func (h *Handler) signUp(c *gin.Context) {
 	var inp signUpUserInput
 
 	if err := c.BindJSON(&inp); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make(map[string]string)
+			for _, fe := range ve {
+				field := strings.ToLower(fe.Field())
+				out[field] = customErrors.ValidationErrorToText(fe)
+			}
+			newErrorsResponse(c, http.StatusBadRequest, out)
+			return
+		}
+
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := h.services.Users.SignUp(c, service.SignUpUserInput(inp)); err != nil {
+		if errors.Is(err, customErrors.ErrUserAlreadyExists) {
+			newErrorResponse(c, http.StatusConflict, customErrors.ErrUserAlreadyExists.Error())
+			return
+		}
+
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	c.Status(http.StatusCreated)
+	return
 }
 
 func (h *Handler) signIn(c *gin.Context) {

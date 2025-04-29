@@ -2,14 +2,20 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"todo_list_go/pkg/logger"
 )
 
-type response struct {
-	Message string `json:"message"`
+type errorResponse struct {
+	Error string `json:"error"`
 }
 
-func newErrorResponse(c *gin.Context, statusCode int, message string) {
-	logger.Error(message)
-	c.AbortWithStatusJSON(statusCode, response{message})
+type errorsResponse struct {
+	Errors any `json:"errors"`
+}
+
+func newErrorResponse(c *gin.Context, statusCode int, error string) {
+	c.AbortWithStatusJSON(statusCode, errorResponse{error})
+}
+
+func newErrorsResponse(c *gin.Context, statusCode int, errors any) {
+	c.AbortWithStatusJSON(statusCode, errorsResponse{errors})
 }
