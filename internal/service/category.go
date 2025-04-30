@@ -57,7 +57,7 @@ func (s *CategoryService) Delete(ctx context.Context, CategoryID, UserID string)
 		return err
 	}
 
-	return s.repo.DeleteByID(ctx, CategoryID)
+	return s.repo.Delete(ctx, CategoryID)
 }
 
 func (s *CategoryService) GetList(ctx context.Context, userID string) ([]models.Category, error) {
