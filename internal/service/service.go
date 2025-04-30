@@ -27,27 +27,38 @@ type User interface {
 }
 
 type CreateTaskInput struct {
-	UserID      string   `json:"user_id"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	CategoryIDs []string `json:"category_ids"`
+	UserID      string `json:"user_id"`
+	CategoryID  string `json:"category_id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Completed   bool   `json:"completed"`
 }
 
 type UpdateTaskInput struct {
-	TaskID      string   `json:"task_id"`
-	UserID      string   `json:"user_id"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Completed   bool     `json:"completed"`
-	CategoryIDs []string `json:"category_ids"`
+	ID          string  `json:"id"`
+	UserID      string  `json:"user_id"`
+	CategoryID  *string `json:"category_id"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Completed   *bool   `json:"completed"`
+}
+
+type TaskOutput struct {
+	ID          string          `json:"id"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
+	Category    models.Category `json:"category"`
+	Title       string          `json:"title"`
+	Description string          `json:"description"`
+	Completed   bool            `json:"completed"`
 }
 
 type Task interface {
-	Create(ctx context.Context, inp CreateTaskInput) (models.Task, error)
-	Update(ctx context.Context, inp UpdateTaskInput) (models.Task, error)
-	Delete(ctx context.Context, TaskID, UserID string) error
-	GetByID(ctx context.Context, TaskID, UserID string) (models.Task, error)
-	GetList(ctx context.Context, userID string, categoryIDs []string) ([]models.Task, error)
+	Create(ctx context.Context, inp CreateTaskInput) (TaskOutput, error)
+	Update(ctx context.Context, inp UpdateTaskInput) (TaskOutput, error)
+	Delete(ctx context.Context, taskID, userID string) error
+	GetByID(ctx context.Context, taskID, userID string) (TaskOutput, error)
+	GetList(ctx context.Context, userID string) ([]TaskOutput, error)
 }
 
 type CreateCategoryInput struct {
