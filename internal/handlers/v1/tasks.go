@@ -112,12 +112,14 @@ func (h *Handler) createTask(c *gin.Context) {
 	})
 
 	if err != nil {
-		if errors.Is(err, customErrors.ErrTaskAlreadyExists) {
+		switch {
+		case errors.Is(err, customErrors.ErrCategoryNotFound):
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+		case errors.Is(err, customErrors.ErrTaskAlreadyExists):
 			newErrorResponse(c, http.StatusConflict, err.Error())
-			return
+		default:
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		}
-
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -199,6 +201,8 @@ func (h *Handler) updateTask(c *gin.Context) {
 		switch {
 		case errors.Is(err, customErrors.ErrTaskNotFound):
 			newErrorResponse(c, http.StatusNotFound, err.Error())
+		case errors.Is(err, customErrors.ErrCategoryNotFound):
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
 		case errors.Is(err, customErrors.ErrTaskAlreadyExists):
 			newErrorResponse(c, http.StatusConflict, err.Error())
 		case errors.Is(err, customErrors.ErrNoUpdateFields):

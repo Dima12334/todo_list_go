@@ -53,7 +53,7 @@ func (r *TaskRepo) Create(ctx context.Context, task models.Task) (TaskOutput, er
 		c.color AS "category.color"
 		FROM tasks t
 		INNER JOIN categories c ON t.category_id = c.id 
-		WHERE t.user_id = $1;`
+		WHERE t.id = $1;`
 	err = r.db.QueryRowxContext(ctx, query, createdTaskID).StructScan(&createdTask)
 	if err != nil {
 		return TaskOutput{}, err
@@ -69,6 +69,9 @@ func (r *TaskRepo) Update(ctx context.Context, inp UpdateTaskInput) (TaskOutput,
 	args := make([]interface{}, 0)
 	argID := 1
 
+	setClause = append(setClause, fmt.Sprintf("updated_at = $%d", argID))
+	args = append(args, inp.UpdatedAt)
+	argID++
 	if inp.Title != nil {
 		setClause = append(setClause, fmt.Sprintf("title = $%d", argID))
 		args = append(args, inp.Title)
