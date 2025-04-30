@@ -3,9 +3,11 @@ package logger
 import "go.uber.org/zap"
 
 func Init() error {
-	var err error
-	baseLogger, err := zap.NewDevelopment()
+	config := zap.NewDevelopmentConfig()
 
+	config.DisableStacktrace = true
+
+	baseLogger, err := config.Build()
 	if err != nil {
 		return err
 	}
