@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
+	"todo_list_go/internal/models"
 	"todo_list_go/internal/service"
 	customErrors "todo_list_go/pkg/errors"
 )
@@ -24,7 +25,7 @@ func (h *Handler) initTasksRoutes(api *gin.RouterGroup) {
 type createTaskInput struct {
 	CategoryID  string `json:"category_id" binding:"required,uuid"`
 	Title       string `json:"title" binding:"required,min=1,max=255"`
-	Description string `json:"description" binding:"required,min=0,max=255"`
+	Description string `json:"description" binding:"min=0,max=255"`
 	Completed   bool   `json:"completed"`
 }
 
@@ -45,6 +46,16 @@ type taskResponse struct {
 	Completed   bool             `json:"completed"`
 }
 
+func toCategoryResponse(category models.Category) categoryResponse {
+	return categoryResponse{
+		ID:          category.ID,
+		CreatedAt:   category.CreatedAt,
+		Title:       category.Title,
+		Description: category.Description,
+		Color:       category.Color,
+	}
+}
+
 func (h *Handler) getAllTasks(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
@@ -61,16 +72,10 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 	tasksList := make([]taskResponse, len(tasks))
 	for i, task := range tasks {
 		tasksList[i] = taskResponse{
-			ID:        task.ID,
-			CreatedAt: task.CreatedAt,
-			UpdatedAt: task.UpdatedAt,
-			Category: categoryResponse{
-				ID:          task.Category.ID,
-				CreatedAt:   task.Category.CreatedAt,
-				Title:       task.Category.Title,
-				Description: task.Category.Description,
-				Color:       task.Category.Color,
-			},
+			ID:          task.ID,
+			CreatedAt:   task.CreatedAt,
+			UpdatedAt:   task.UpdatedAt,
+			Category:    toCategoryResponse(task.Category),
 			Title:       task.Title,
 			Description: task.Description,
 			Completed:   task.Completed,
@@ -89,7 +94,7 @@ func (h *Handler) createTask(c *gin.Context) {
 
 	var inp createTaskInput
 	if err := c.BindJSON(&inp); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err)
+		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
@@ -106,19 +111,23 @@ func (h *Handler) createTask(c *gin.Context) {
 		Completed:   inp.Completed,
 	})
 
+	if err != nil {
+		if errors.Is(err, customErrors.ErrTaskAlreadyExists) {
+			newErrorResponse(c, http.StatusConflict, err.Error())
+			return
+		}
+
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.JSON(
 		http.StatusCreated,
 		taskResponse{
-			ID:        task.ID,
-			CreatedAt: task.CreatedAt,
-			UpdatedAt: task.UpdatedAt,
-			Category: categoryResponse{
-				ID:          task.Category.ID,
-				CreatedAt:   task.Category.CreatedAt,
-				Title:       task.Category.Title,
-				Description: task.Category.Description,
-				Color:       task.Category.Color,
-			},
+			ID:          task.ID,
+			CreatedAt:   task.CreatedAt,
+			UpdatedAt:   task.UpdatedAt,
+			Category:    toCategoryResponse(task.Category),
 			Title:       task.Title,
 			Description: task.Description,
 			Completed:   task.Completed,
@@ -146,16 +155,10 @@ func (h *Handler) getTaskById(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,
 		taskResponse{
-			ID:        task.ID,
-			CreatedAt: task.CreatedAt,
-			UpdatedAt: task.UpdatedAt,
-			Category: categoryResponse{
-				ID:          task.Category.ID,
-				CreatedAt:   task.Category.CreatedAt,
-				Title:       task.Category.Title,
-				Description: task.Category.Description,
-				Color:       task.Category.Color,
-			},
+			ID:          task.ID,
+			CreatedAt:   task.CreatedAt,
+			UpdatedAt:   task.UpdatedAt,
+			Category:    toCategoryResponse(task.Category),
 			Title:       task.Title,
 			Description: task.Description,
 			Completed:   task.Completed,
@@ -173,7 +176,7 @@ func (h *Handler) updateTask(c *gin.Context) {
 
 	var inp updateTaskInput
 	if err := c.BindJSON(&inp); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err)
+		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
@@ -209,16 +212,10 @@ func (h *Handler) updateTask(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,
 		taskResponse{
-			ID:        task.ID,
-			CreatedAt: task.CreatedAt,
-			UpdatedAt: task.UpdatedAt,
-			Category: categoryResponse{
-				ID:          task.Category.ID,
-				CreatedAt:   task.Category.CreatedAt,
-				Title:       task.Category.Title,
-				Description: task.Category.Description,
-				Color:       task.Category.Color,
-			},
+			ID:          task.ID,
+			CreatedAt:   task.CreatedAt,
+			UpdatedAt:   task.UpdatedAt,
+			Category:    toCategoryResponse(task.Category),
 			Title:       task.Title,
 			Description: task.Description,
 			Completed:   task.Completed,

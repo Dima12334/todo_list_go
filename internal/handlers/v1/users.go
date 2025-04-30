@@ -47,7 +47,7 @@ func (h *Handler) signUp(c *gin.Context) {
 	var inp signUpUserInput
 
 	if err := c.BindJSON(&inp); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err)
+		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
@@ -73,7 +73,7 @@ func (h *Handler) signUp(c *gin.Context) {
 func (h *Handler) signIn(c *gin.Context) {
 	var inp signInUserInput
 	if err := c.BindJSON(&inp); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err)
+		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return

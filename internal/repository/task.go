@@ -38,11 +38,22 @@ func (r *TaskRepo) Create(ctx context.Context, task models.Task) (TaskOutput, er
 	}
 
 	query = `
-		SELECT t.id, t.created_at, t.updated_at, t.title, t.description, t.completed, 
-		   c.id, c.created_at, c.title, c.description, c.color
+		SELECT     
+		t.id AS id,
+		t.created_at AS created_at,
+		t.updated_at AS updated_at,
+		t.title AS title,
+		t.description AS description,
+		t.completed AS completed,
+		
+		c.id AS "category.id",
+		c.created_at AS "category.created_at",
+		c.title AS "category.title",
+		c.description AS "category.description",
+		c.color AS "category.color"
 		FROM tasks t
-		INNER JOIN categories c ON tasks.category_id = categories.id 
-		WHERE t.id = $1;`
+		INNER JOIN categories c ON t.category_id = c.id 
+		WHERE t.user_id = $1;`
 	err = r.db.QueryRowxContext(ctx, query, createdTaskID).StructScan(&createdTask)
 	if err != nil {
 		return TaskOutput{}, err
@@ -104,10 +115,21 @@ func (r *TaskRepo) GetListByUserID(ctx context.Context, userID string) ([]TaskOu
 	tasks := make([]TaskOutput, 0)
 
 	query := `
-		SELECT t.id, t.created_at, t.updated_at, t.title, t.description, t.completed, 
-		   c.id, c.created_at, c.title, c.description, c.color
+		SELECT     
+		t.id AS id,
+		t.created_at AS created_at,
+		t.updated_at AS updated_at,
+		t.title AS title,
+		t.description AS description,
+		t.completed AS completed,
+		
+		c.id AS "category.id",
+		c.created_at AS "category.created_at",
+		c.title AS "category.title",
+		c.description AS "category.description",
+		c.color AS "category.color"
 		FROM tasks t
-		INNER JOIN categories c ON tasks.category_id = categories.id 
+		INNER JOIN categories c ON t.category_id = c.id 
 		WHERE t.user_id = $1;`
 	err := r.db.SelectContext(ctx, &tasks, query, userID)
 
@@ -118,10 +140,21 @@ func (r *TaskRepo) GetByID(ctx context.Context, taskID, userID string) (TaskOutp
 	var task TaskOutput
 
 	query := `
-		SELECT t.id, t.created_at, t.updated_at, t.title, t.description, t.completed, 
-		   c.id, c.created_at, c.title, c.description, c.color
+		SELECT     
+		t.id AS id,
+		t.created_at AS created_at,
+		t.updated_at AS updated_at,
+		t.title AS title,
+		t.description AS description,
+		t.completed AS completed,
+		
+		c.id AS "category.id",
+		c.created_at AS "category.created_at",
+		c.title AS "category.title",
+		c.description AS "category.description",
+		c.color AS "category.color"
 		FROM tasks t
-		INNER JOIN categories c ON tasks.category_id = categories.id 
+		INNER JOIN categories c ON t.category_id = c.id 
 		WHERE t.id = $1 AND t.user_id = $2;`
 
 	err := r.db.QueryRowxContext(ctx, query, taskID, userID).StructScan(&task)

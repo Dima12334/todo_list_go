@@ -9,14 +9,20 @@ import (
 )
 
 type TaskService struct {
-	repo repository.TaskRepository
+	repo         repository.TaskRepository
+	categoryRepo repository.CategoryRepository
 }
 
-func NewTaskService(repo repository.TaskRepository) *TaskService {
-	return &TaskService{repo: repo}
+func NewTaskService(repo repository.TaskRepository, categoryRepo repository.CategoryRepository) *TaskService {
+	return &TaskService{repo: repo, categoryRepo: categoryRepo}
 }
 
 func (s *TaskService) Create(ctx context.Context, inp CreateTaskInput) (TaskOutput, error) {
+	_, err := s.categoryRepo.GetByID(ctx, inp.CategoryID, inp.UserID)
+	if err != nil {
+		return TaskOutput{}, err
+	}
+
 	task := models.Task{
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
@@ -42,6 +48,13 @@ func (s *TaskService) Update(ctx context.Context, inp UpdateTaskInput) (TaskOutp
 
 	if inp.Title == nil && inp.Description == nil && inp.CategoryID == nil && inp.Completed == nil {
 		return TaskOutput{}, customErrors.ErrNoUpdateFields
+	}
+
+	if inp.CategoryID != nil {
+		_, err = s.categoryRepo.GetByID(ctx, *inp.CategoryID, inp.UserID)
+		if err != nil {
+			return TaskOutput{}, err
+		}
 	}
 
 	updateInput := repository.UpdateTaskInput{

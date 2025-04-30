@@ -24,13 +24,13 @@ type UpdateTaskInput struct {
 }
 
 type TaskOutput struct {
-	ID          string          `json:"id"`
-	CreatedAt   time.Time       `json:"created_at"`
-	UpdatedAt   time.Time       `json:"updated_at"`
+	ID          string          `json:"id" db:"id"`
+	CreatedAt   time.Time       `json:"created_at" db:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at" db:"updated_at"`
 	Category    models.Category `json:"category"`
-	Title       string          `json:"title"`
-	Description string          `json:"description"`
-	Completed   bool            `json:"completed"`
+	Title       string          `json:"title" db:"title"`
+	Description string          `json:"description" db:"description"`
+	Completed   bool            `json:"completed" db:"completed"`
 }
 
 type TaskRepository interface {

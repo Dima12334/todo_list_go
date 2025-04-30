@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/lib/pq"
+	"reflect"
 	"strings"
 )
 
@@ -26,13 +27,23 @@ func IsDuplicateKeyError(err error) bool {
 	return false
 }
 
-func FormatValidationErrorOutput(err error) map[string]string {
+func FormatValidationErrorOutput(err error, obj any) map[string]string {
 	var ve validator.ValidationErrors
 	if errors.As(err, &ve) {
 		out := make(map[string]string)
+		t := reflect.TypeOf(obj)
+		if t.Kind() == reflect.Ptr {
+			t = t.Elem()
+		}
+
 		for _, fe := range ve {
-			field := strings.ToLower(fe.Field())
-			out[field] = ValidationErrorToText(fe)
+			if field, ok := t.FieldByName(fe.StructField()); ok {
+				jsonTag := strings.Split(field.Tag.Get("json"), ",")[0]
+				if jsonTag == "-" || jsonTag == "" {
+					jsonTag = strings.ToLower(fe.Field())
+				}
+				out[jsonTag] = ValidationErrorToText(fe)
+			}
 		}
 		return out
 	}

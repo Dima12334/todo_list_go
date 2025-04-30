@@ -71,7 +71,7 @@ func (h *Handler) createCategory(c *gin.Context) {
 	var inp createCategoryInput
 
 	if err := c.BindJSON(&inp); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err)
+		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return
@@ -124,7 +124,7 @@ func (h *Handler) updateCategory(c *gin.Context) {
 
 	var inp updateCategoryInput
 	if err := c.BindJSON(&inp); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err)
+		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
 			newErrorsResponse(c, http.StatusBadRequest, out)
 			return

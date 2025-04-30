@@ -99,7 +99,7 @@ type Services struct {
 func NewServices(deps Deps) *Services {
 	return &Services{
 		Users:      NewUserService(deps.Repos.User, deps.AccessTokenTTL, deps.TokenManager, deps.Hasher),
-		Tasks:      NewTaskService(deps.Repos.Task),
+		Tasks:      NewTaskService(deps.Repos.Task, deps.Repos.Category),
 		Categories: NewCategoryService(deps.Repos.Category),
 	}
 }
