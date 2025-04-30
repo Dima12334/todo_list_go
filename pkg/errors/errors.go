@@ -41,6 +41,8 @@ func FormatValidationErrorOutput(err error) map[string]string {
 
 func ValidationErrorToText(fe validator.FieldError) string {
 	switch fe.Tag() {
+	case "uuid":
+		return "must be a valid UUID"
 	case "required":
 		return "is required"
 	case "email":
