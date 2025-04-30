@@ -1,0 +1,3 @@
+ALTER TABLE tasks DROP CONSTRAINT IF EXISTS fk_tasks_category;
+
+ALTER TABLE tasks DROP COLUMN IF EXISTS category_id, DROP COLUMN IF EXISTS updated_at;

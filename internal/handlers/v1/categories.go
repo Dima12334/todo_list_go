@@ -22,8 +22,14 @@ func (h *Handler) initCategoriesRoutes(api *gin.RouterGroup) {
 
 type createCategoryInput struct {
 	Title       string `json:"title" binding:"required,min=1,max=255"`
-	Description string `json:"description" binding:"required,min=1,max=255"`
+	Description string `json:"description" binding:"required,min=0,max=255"`
 	Color       string `json:"color" binding:"oneof=red blue yellow purple green brown"`
+}
+
+type updateCategoryInput struct {
+	Title       *string `json:"title" binding:"omitempty,min=1,max=255"`
+	Description *string `json:"description" binding:"omitempty,min=0,max=255"`
+	Color       *string `json:"color" binding:"omitempty,oneof=red blue yellow purple green brown"`
 }
 
 type categoryResponse struct {
@@ -32,12 +38,6 @@ type categoryResponse struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Color       string    `json:"color"`
-}
-
-type updateCategoryInput struct {
-	Title       *string `json:"title" binding:"omitempty,min=1,max=255"`
-	Description *string `json:"description" binding:"omitempty,min=1,max=255"`
-	Color       *string `json:"color" binding:"omitempty,oneof=red blue yellow purple green brown"`
 }
 
 func (h *Handler) getAllCategories(c *gin.Context) {

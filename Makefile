@@ -1,5 +1,5 @@
 migration:
-	@migrate create -ext sql -dir ./migrations $(filter-out $@,$(MAKECMDGOALS))
+	@migrate create -ext sql -dir ./migrations -seq $(filter-out $@,$(MAKECMDGOALS))
 
 migrate-up:
 	@go run cmd/migrate/main.go up
