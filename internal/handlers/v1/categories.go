@@ -40,6 +40,18 @@ type categoryResponse struct {
 	Color       string    `json:"color"`
 }
 
+// @Summary Get Categories
+// @Security ApiKeyAuth
+// @Tags categories
+// @Description get categories
+// @ModuleID getCategories
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} categoryResponse
+// @Failure 401 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /categories [get]
 func (h *Handler) getAllCategories(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
@@ -67,13 +79,26 @@ func (h *Handler) getAllCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, categoriesList)
 }
 
+// @Summary Create Category
+// @Security ApiKeyAuth
+// @Tags categories
+// @Description create category
+// @ModuleID createCategory
+// @Accept  json
+// @Produce  json
+// @Param input body createCategoryInput true "category info"
+// @Success 201 {object} categoryResponse
+// @Failure 400,401,409 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /categories [post]
 func (h *Handler) createCategory(c *gin.Context) {
 	var inp createCategoryInput
 
 	if err := c.BindJSON(&inp); err != nil {
 		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
-			newErrorsResponse(c, http.StatusBadRequest, out)
+			newErrorResponse(c, http.StatusBadRequest, out)
 			return
 		}
 
@@ -114,6 +139,19 @@ func (h *Handler) createCategory(c *gin.Context) {
 	})
 }
 
+// @Summary Update Category
+// @Security ApiKeyAuth
+// @Tags categories
+// @Description update category
+// @ModuleID updateCategory
+// @Accept  json
+// @Param id path string true "category id"
+// @Param input body updateCategoryInput true "update category info"
+// @Success 200 {object} categoryResponse
+// @Failure 400,401,404,409 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /categories/{id} [put]
 func (h *Handler) updateCategory(c *gin.Context) {
 	categoryID := c.Param("id")
 	userID, err := getUserID(c)
@@ -126,7 +164,7 @@ func (h *Handler) updateCategory(c *gin.Context) {
 	if err := c.BindJSON(&inp); err != nil {
 		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
-			newErrorsResponse(c, http.StatusBadRequest, out)
+			newErrorResponse(c, http.StatusBadRequest, out)
 			return
 		}
 
@@ -166,6 +204,19 @@ func (h *Handler) updateCategory(c *gin.Context) {
 	})
 }
 
+// @Summary Delete Category
+// @Security ApiKeyAuth
+// @Tags categories
+// @Description delete category
+// @ModuleID deleteCategory
+// @Accept  json
+// @Produce  json
+// @Param id path string true "category id"
+// @Success 204
+// @Failure 404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /categories/{id} [delete]
 func (h *Handler) deleteCategory(c *gin.Context) {
 	categoryID := c.Param("id")
 	userID, err := getUserID(c)

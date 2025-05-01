@@ -56,6 +56,18 @@ func toCategoryResponse(category models.Category) categoryResponse {
 	}
 }
 
+// @Summary Get Tasks
+// @Security ApiKeyAuth
+// @Tags tasks
+// @Description get tasks
+// @ModuleID getTasks
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} taskResponse
+// @Failure 401 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /tasks [get]
 func (h *Handler) getAllTasks(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
@@ -85,6 +97,19 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasksList)
 }
 
+// @Summary Create Task
+// @Security ApiKeyAuth
+// @Tags tasks
+// @Description create task
+// @ModuleID createTask
+// @Accept  json
+// @Produce  json
+// @Param input body createTaskInput true "task info"
+// @Success 201 {object} taskResponse
+// @Failure 400,401,409 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /tasks [post]
 func (h *Handler) createTask(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
@@ -96,7 +121,7 @@ func (h *Handler) createTask(c *gin.Context) {
 	if err := c.BindJSON(&inp); err != nil {
 		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
-			newErrorsResponse(c, http.StatusBadRequest, out)
+			newErrorResponse(c, http.StatusBadRequest, out)
 			return
 		}
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -137,6 +162,19 @@ func (h *Handler) createTask(c *gin.Context) {
 	)
 }
 
+// @Summary Get Task
+// @Security ApiKeyAuth
+// @Tags tasks
+// @Description get task
+// @ModuleID getTask
+// @Accept  json
+// @Produce  json
+// @Param id path string true "task id"
+// @Success 200 {object} taskResponse
+// @Failure 404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /tasks/{id} [get]
 func (h *Handler) getTaskById(c *gin.Context) {
 	taskId := c.Param("id")
 	userID, err := getUserID(c)
@@ -168,6 +206,19 @@ func (h *Handler) getTaskById(c *gin.Context) {
 	)
 }
 
+// @Summary Update Task
+// @Security ApiKeyAuth
+// @Tags tasks
+// @Description update task
+// @ModuleID updateTask
+// @Accept  json
+// @Param id path string true "task id"
+// @Param input body updateTaskInput true "update task info"
+// @Success 200 {object} taskResponse
+// @Failure 400,401,404,409 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /tasks/{id} [put]
 func (h *Handler) updateTask(c *gin.Context) {
 	taskID := c.Param("id")
 	userID, err := getUserID(c)
@@ -180,7 +231,7 @@ func (h *Handler) updateTask(c *gin.Context) {
 	if err := c.BindJSON(&inp); err != nil {
 		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
-			newErrorsResponse(c, http.StatusBadRequest, out)
+			newErrorResponse(c, http.StatusBadRequest, out)
 			return
 		}
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -228,6 +279,19 @@ func (h *Handler) updateTask(c *gin.Context) {
 
 }
 
+// @Summary Delete Task
+// @Security ApiKeyAuth
+// @Tags tasks
+// @Description delete task
+// @ModuleID deleteTask
+// @Accept  json
+// @Produce  json
+// @Param id path string true "task id"
+// @Success 204
+// @Failure 401,404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /tasks/{id} [delete]
 func (h *Handler) deleteTask(c *gin.Context) {
 	taskID := c.Param("id")
 	userID, err := getUserID(c)

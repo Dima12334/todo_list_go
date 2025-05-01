@@ -2,10 +2,14 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
 	apiV1 "todo_list_go/internal/handlers/v1"
 	"todo_list_go/internal/service"
 	"todo_list_go/pkg/auth"
+
+	_ "todo_list_go/docs"
 )
 
 type Handler struct {
@@ -21,6 +25,8 @@ func (h *Handler) Init() *gin.Engine {
 	router := gin.Default()
 
 	router.Use(corsMiddleware)
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Init router
 	router.GET("ping", func(c *gin.Context) {

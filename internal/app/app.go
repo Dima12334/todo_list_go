@@ -20,6 +20,18 @@ import (
 	"todo_list_go/pkg/logger"
 )
 
+// @title ToDO List API
+// @version 1.0
+// @description REST API for ToDo List app
+
+// @host localhost:8080
+// @BasePath /api/v1/
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
+// Run initializes the whole application.
 func Run(configDir string) {
 	if err := logger.Init(); err != nil {
 		log.Fatalf("failed to initialize logger: %v", err)

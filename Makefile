@@ -6,3 +6,6 @@ migrate-up:
 
 migrate-down:
 	@go run cmd/migrate/main.go down
+
+swag:
+	swag init -g internal/app/app.go

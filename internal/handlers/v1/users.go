@@ -43,13 +43,26 @@ type userMeResponse struct {
 	Email     string    `json:"email"`
 }
 
+// @Summary SignUp
+// @Tags users
+// @Description create user
+// @ModuleID createUser
+// @Accept  json
+// @Produce  json
+// @Param input body signUpUserInput true "user info"
+// @Success 201
+// @Failure 400 {object} errorResponse
+// @Failure 409 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /users/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var inp signUpUserInput
 
 	if err := c.BindJSON(&inp); err != nil {
 		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
-			newErrorsResponse(c, http.StatusBadRequest, out)
+			newErrorResponse(c, http.StatusBadRequest, out)
 			return
 		}
 
@@ -70,12 +83,24 @@ func (h *Handler) signUp(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
+// @Summary SignIn
+// @Tags users
+// @Description login user
+// @ModuleID loginUser
+// @Accept  json
+// @Produce  json
+// @Param input body signInUserInput true "user credentials"
+// @Success 200 {object} tokenResponse
+// @Failure 400 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /users/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var inp signInUserInput
 	if err := c.BindJSON(&inp); err != nil {
 		out := customErrors.FormatValidationErrorOutput(err, inp)
 		if out != nil {
-			newErrorsResponse(c, http.StatusBadRequest, out)
+			newErrorResponse(c, http.StatusBadRequest, out)
 			return
 		}
 
@@ -97,6 +122,18 @@ func (h *Handler) signIn(c *gin.Context) {
 	c.JSON(http.StatusOK, tokenResponse{accessToken})
 }
 
+// @Summary Get me
+// @Security ApiKeyAuth
+// @Tags users
+// @Description get current user
+// @ModuleID getMe
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} userMeResponse
+// @Failure 401,404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /users/me [get]
 func (h *Handler) getMe(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
@@ -106,7 +143,7 @@ func (h *Handler) getMe(c *gin.Context) {
 	user, err := h.services.Users.GetByID(c, userID)
 	if err != nil {
 		if errors.Is(err, customErrors.ErrUserNotFound) {
-			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			newErrorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
 
