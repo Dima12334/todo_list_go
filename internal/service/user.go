@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"time"
-	"todo_list_go/internal/models"
+	"todo_list_go/internal/domain"
 	"todo_list_go/internal/repository"
 	"todo_list_go/pkg/auth"
 	customErrors "todo_list_go/pkg/errors"
@@ -32,7 +32,7 @@ func (s *UserService) SignUp(ctx context.Context, inp SignUpUserInput) error {
 		return err
 	}
 
-	user := models.User{
+	user := domain.User{
 		Name:      inp.Name,
 		Password:  passwordHash,
 		Email:     inp.Email,
@@ -65,6 +65,6 @@ func (s *UserService) SignIn(ctx context.Context, inp SignInUserInput) (string, 
 	return accessToken, nil
 }
 
-func (s *UserService) GetByID(ctx context.Context, userID string) (models.User, error) {
+func (s *UserService) GetByID(ctx context.Context, userID string) (domain.User, error) {
 	return s.repo.GetByID(ctx, userID)
 }

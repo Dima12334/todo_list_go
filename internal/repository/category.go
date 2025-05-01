@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strings"
-	"todo_list_go/internal/models"
+	"todo_list_go/internal/domain"
 	customErrors "todo_list_go/pkg/errors"
 )
 
@@ -19,8 +19,8 @@ func NewCategoryRepo(db *sqlx.DB) *CategoryRepo {
 	return &CategoryRepo{db: db}
 }
 
-func (r *CategoryRepo) Create(ctx context.Context, category models.Category) (models.Category, error) {
-	var createdCategory models.Category
+func (r *CategoryRepo) Create(ctx context.Context, category domain.Category) (domain.Category, error) {
+	var createdCategory domain.Category
 	query := `
 		INSERT INTO categories (user_id, created_at, title, description, color) 
 		values ($1, $2, $3, $4, $5) 
@@ -31,15 +31,15 @@ func (r *CategoryRepo) Create(ctx context.Context, category models.Category) (mo
 
 	if err != nil {
 		if customErrors.IsDuplicateKeyError(err) {
-			return models.Category{}, customErrors.ErrCategoryAlreadyExists
+			return domain.Category{}, customErrors.ErrCategoryAlreadyExists
 		}
-		return models.Category{}, err
+		return domain.Category{}, err
 	}
 	return createdCategory, nil
 }
 
-func (r *CategoryRepo) Update(ctx context.Context, inp UpdateCategoryInput) (models.Category, error) {
-	var updatedCategory models.Category
+func (r *CategoryRepo) Update(ctx context.Context, inp UpdateCategoryInput) (domain.Category, error) {
+	var updatedCategory domain.Category
 
 	setClause := make([]string, 0)
 	args := make([]interface{}, 0)
@@ -72,9 +72,9 @@ func (r *CategoryRepo) Update(ctx context.Context, inp UpdateCategoryInput) (mod
 	err := r.db.QueryRowxContext(ctx, query, args...).StructScan(&updatedCategory)
 	if err != nil {
 		if customErrors.IsDuplicateKeyError(err) {
-			return models.Category{}, customErrors.ErrCategoryAlreadyExists
+			return domain.Category{}, customErrors.ErrCategoryAlreadyExists
 		}
-		return models.Category{}, err
+		return domain.Category{}, err
 	}
 
 	return updatedCategory, nil
@@ -87,26 +87,26 @@ func (r *CategoryRepo) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *CategoryRepo) GetListByUserID(ctx context.Context, userID string) ([]models.Category, error) {
-	categories := make([]models.Category, 0)
+func (r *CategoryRepo) GetListByUserID(ctx context.Context, userID string) ([]domain.Category, error) {
+	categories := make([]domain.Category, 0)
 
-	query := "SELECT id, created_at, title, description, color FROM categories WHERE user_id=$1;"
+	query := "SELECT id, created_at, title, description, color FROM categories WHERE user_id=$1 ORDER BY created_at DESC;"
 	err := r.db.SelectContext(ctx, &categories, query, userID)
 
 	return categories, err
 }
 
-func (r *CategoryRepo) GetByID(ctx context.Context, categoryID, userID string) (models.Category, error) {
-	var category models.Category
+func (r *CategoryRepo) GetByID(ctx context.Context, categoryID, userID string) (domain.Category, error) {
+	var category domain.Category
 
 	query := "SELECT id, created_at, title, description, color FROM categories WHERE id=$1 AND user_id=$2;"
 	err := r.db.GetContext(ctx, &category, query, categoryID, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Category{}, customErrors.ErrCategoryNotFound
+			return domain.Category{}, customErrors.ErrCategoryNotFound
 		}
 
-		return models.Category{}, err
+		return domain.Category{}, err
 	}
 
 	return category, nil

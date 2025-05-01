@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"strings"
-	"todo_list_go/internal/models"
+	"todo_list_go/internal/domain"
 	customErrors "todo_list_go/pkg/errors"
 )
 
@@ -19,7 +19,7 @@ func NewTaskRepo(db *sqlx.DB) *TaskRepo {
 	return &TaskRepo{db: db}
 }
 
-func (r *TaskRepo) Create(ctx context.Context, task models.Task) (TaskOutput, error) {
+func (r *TaskRepo) Create(ctx context.Context, task domain.Task) (TaskOutput, error) {
 	var createdTaskID string
 	var createdTask TaskOutput
 
@@ -114,8 +114,9 @@ func (r *TaskRepo) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *TaskRepo) GetListByUserID(ctx context.Context, userID string) ([]TaskOutput, error) {
+func (r *TaskRepo) GetListByUserID(ctx context.Context, userID string, limit, offset int) ([]TaskOutput, int64, error) {
 	tasks := make([]TaskOutput, 0)
+	var count int64
 
 	query := `
 		SELECT     
@@ -133,10 +134,21 @@ func (r *TaskRepo) GetListByUserID(ctx context.Context, userID string) ([]TaskOu
 		c.color AS "category.color"
 		FROM tasks t
 		INNER JOIN categories c ON t.category_id = c.id 
-		WHERE t.user_id = $1;`
-	err := r.db.SelectContext(ctx, &tasks, query, userID)
+		WHERE t.user_id = $1
+		ORDER BY t.created_at DESC
+		LIMIT $2 OFFSET $3;`
+	err := r.db.SelectContext(ctx, &tasks, query, userID, limit, offset)
+	if err != nil {
+		return tasks, 0, err
+	}
 
-	return tasks, err
+	queryCount := `SELECT COUNT(*) FROM tasks WHERE user_id = $1;`
+	err = r.db.QueryRowxContext(ctx, queryCount, userID).Scan(&count)
+	if err != nil {
+		return tasks, 0, err
+	}
+
+	return tasks, count, err
 }
 
 func (r *TaskRepo) GetByID(ctx context.Context, taskID, userID string) (TaskOutput, error) {

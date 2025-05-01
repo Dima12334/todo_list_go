@@ -7,6 +7,14 @@ import (
 	"todo_list_go/pkg/logger"
 )
 
+type paginatedResponse[T any] struct {
+	Page       int   `json:"page"`
+	Limit      int   `json:"limit"`
+	TotalPages int   `json:"total_pages"`
+	Total      int64 `json:"total_items"`
+	Items      []T   `json:"items"`
+}
+
 type errorBodyResponse struct {
 	Type    string `json:"type" binding:"oneof=string dict"`
 	Details any    `json:"details"`

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
-	"todo_list_go/internal/models"
+	"todo_list_go/internal/domain"
 	"todo_list_go/internal/service"
 	customErrors "todo_list_go/pkg/errors"
 )
@@ -46,7 +46,7 @@ type taskResponse struct {
 	Completed   bool             `json:"completed"`
 }
 
-func toCategoryResponse(category models.Category) categoryResponse {
+func toCategoryResponse(category domain.Category) categoryResponse {
 	return categoryResponse{
 		ID:          category.ID,
 		CreatedAt:   category.CreatedAt,
@@ -63,6 +63,8 @@ func toCategoryResponse(category models.Category) categoryResponse {
 // @ModuleID getTasks
 // @Accept  json
 // @Produce  json
+// @Param page query int false "page number" default(1)
+// @Param limit query int false "items per page" default(20)
 // @Success 200 {array} taskResponse
 // @Failure 401 {object} errorResponse
 // @Failure 500 {object} errorResponse
@@ -75,14 +77,27 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 		return
 	}
 
-	tasks, err := h.services.Tasks.GetList(c, userID)
+	var pagination domain.PaginationQuery
+	if err := c.BindQuery(&pagination); err != nil {
+		out := customErrors.FormatValidationErrorOutput(err, pagination)
+		if out != nil {
+			newErrorResponse(c, http.StatusBadRequest, out)
+			return
+		}
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	pagination.NormalizePagination()
+
+	res, err := h.services.Tasks.GetList(c, userID, pagination)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	tasksList := make([]taskResponse, len(tasks))
-	for i, task := range tasks {
+	tasksList := make([]taskResponse, len(res.Items))
+	for i, task := range res.Items {
 		tasksList[i] = taskResponse{
 			ID:          task.ID,
 			CreatedAt:   task.CreatedAt,
@@ -94,7 +109,13 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, tasksList)
+	c.JSON(http.StatusOK, paginatedResponse[taskResponse]{
+		Page:       pagination.Page,
+		Limit:      pagination.Limit,
+		TotalPages: res.TotalPages,
+		Total:      res.TotalItems,
+		Items:      tasksList,
+	})
 }
 
 // @Summary Create Task

@@ -27,11 +27,11 @@ func IsDuplicateKeyError(err error) bool {
 	return false
 }
 
-func FormatValidationErrorOutput(err error, obj any) map[string]string {
+func FormatValidationErrorOutput(err error, inputObj any) map[string]string {
 	var ve validator.ValidationErrors
 	if errors.As(err, &ve) {
 		out := make(map[string]string)
-		t := reflect.TypeOf(obj)
+		t := reflect.TypeOf(inputObj)
 		if t.Kind() == reflect.Ptr {
 			t = t.Elem()
 		}
@@ -51,6 +51,8 @@ func FormatValidationErrorOutput(err error, obj any) map[string]string {
 }
 
 func ValidationErrorToText(fe validator.FieldError) string {
+	fieldKind := fe.Kind()
+
 	switch fe.Tag() {
 	case "uuid":
 		return "must be a valid UUID"
@@ -59,9 +61,15 @@ func ValidationErrorToText(fe validator.FieldError) string {
 	case "email":
 		return "must be a valid email address"
 	case "min":
-		return fmt.Sprintf("must be at least %s characters", fe.Param())
+		if fieldKind == reflect.String {
+			return fmt.Sprintf("must be at least %s characters", fe.Param())
+		}
+		return fmt.Sprintf("must be at least %s", fe.Param())
 	case "max":
-		return fmt.Sprintf("must be at most %s characters", fe.Param())
+		if fieldKind == reflect.String {
+			return fmt.Sprintf("must be at most %s characters", fe.Param())
+		}
+		return fmt.Sprintf("must be at most %s", fe.Param())
 	case "oneof":
 		return fmt.Sprintf("must be one of: %s", fe.Param())
 	default:

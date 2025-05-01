@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"time"
-	"todo_list_go/internal/models"
+	"todo_list_go/internal/domain"
 	"todo_list_go/internal/repository"
 	customErrors "todo_list_go/pkg/errors"
 )
@@ -16,8 +16,8 @@ func NewCategoryService(repo repository.CategoryRepository) *CategoryService {
 	return &CategoryService{repo: repo}
 }
 
-func (s *CategoryService) Create(ctx context.Context, inp CreateCategoryInput) (models.Category, error) {
-	category := models.Category{
+func (s *CategoryService) Create(ctx context.Context, inp CreateCategoryInput) (domain.Category, error) {
+	category := domain.Category{
 		UserID:      inp.UserID,
 		CreatedAt:   time.Now(),
 		Title:       inp.Title,
@@ -26,19 +26,19 @@ func (s *CategoryService) Create(ctx context.Context, inp CreateCategoryInput) (
 	}
 	createdCategory, err := s.repo.Create(ctx, category)
 	if err != nil {
-		return models.Category{}, err
+		return domain.Category{}, err
 	}
 	return createdCategory, nil
 }
 
-func (s *CategoryService) Update(ctx context.Context, inp UpdateCategoryInput) (models.Category, error) {
+func (s *CategoryService) Update(ctx context.Context, inp UpdateCategoryInput) (domain.Category, error) {
 	_, err := s.repo.GetByID(ctx, inp.ID, inp.UserID)
 	if err != nil {
-		return models.Category{}, err
+		return domain.Category{}, err
 	}
 
 	if inp.Title == nil && inp.Description == nil && inp.Color == nil {
-		return models.Category{}, customErrors.ErrNoUpdateFields
+		return domain.Category{}, customErrors.ErrNoUpdateFields
 	}
 
 	updateInput := repository.UpdateCategoryInput{
@@ -60,6 +60,6 @@ func (s *CategoryService) Delete(ctx context.Context, CategoryID, UserID string)
 	return s.repo.Delete(ctx, CategoryID)
 }
 
-func (s *CategoryService) GetList(ctx context.Context, userID string) ([]models.Category, error) {
+func (s *CategoryService) GetList(ctx context.Context, userID string) ([]domain.Category, error) {
 	return s.repo.GetListByUserID(ctx, userID)
 }

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"time"
-	"todo_list_go/internal/models"
+	"todo_list_go/internal/domain"
 	"todo_list_go/internal/repository"
 	"todo_list_go/pkg/auth"
 	"todo_list_go/pkg/hash"
@@ -23,7 +23,7 @@ type SignInUserInput struct {
 type User interface {
 	SignUp(ctx context.Context, inp SignUpUserInput) error
 	SignIn(ctx context.Context, inp SignInUserInput) (string, error)
-	GetByID(ctx context.Context, userID string) (models.User, error)
+	GetByID(ctx context.Context, userID string) (domain.User, error)
 }
 
 type CreateTaskInput struct {
@@ -47,10 +47,16 @@ type TaskOutput struct {
 	ID          string          `json:"id"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
-	Category    models.Category `json:"category"`
+	Category    domain.Category `json:"category"`
 	Title       string          `json:"title"`
 	Description string          `json:"description"`
 	Completed   bool            `json:"completed"`
+}
+
+type TaskListResult struct {
+	Items      []TaskOutput
+	TotalItems int64
+	TotalPages int
 }
 
 type Task interface {
@@ -58,7 +64,7 @@ type Task interface {
 	Update(ctx context.Context, inp UpdateTaskInput) (TaskOutput, error)
 	Delete(ctx context.Context, taskID, userID string) error
 	GetByID(ctx context.Context, taskID, userID string) (TaskOutput, error)
-	GetList(ctx context.Context, userID string) ([]TaskOutput, error)
+	GetList(ctx context.Context, userID string, pagination domain.PaginationQuery) (TaskListResult, error)
 }
 
 type CreateCategoryInput struct {
@@ -77,10 +83,10 @@ type UpdateCategoryInput struct {
 }
 
 type Category interface {
-	Create(ctx context.Context, inp CreateCategoryInput) (models.Category, error)
-	Update(ctx context.Context, inp UpdateCategoryInput) (models.Category, error)
+	Create(ctx context.Context, inp CreateCategoryInput) (domain.Category, error)
+	Update(ctx context.Context, inp UpdateCategoryInput) (domain.Category, error)
 	Delete(ctx context.Context, categoryID, userID string) error
-	GetList(ctx context.Context, userID string) ([]models.Category, error)
+	GetList(ctx context.Context, userID string) ([]domain.Category, error)
 }
 
 type Deps struct {

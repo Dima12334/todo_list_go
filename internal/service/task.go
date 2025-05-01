@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
+	"math"
 	"time"
-	"todo_list_go/internal/models"
+	"todo_list_go/internal/domain"
 	"todo_list_go/internal/repository"
 	customErrors "todo_list_go/pkg/errors"
 )
@@ -23,7 +24,7 @@ func (s *TaskService) Create(ctx context.Context, inp CreateTaskInput) (TaskOutp
 		return TaskOutput{}, err
 	}
 
-	task := models.Task{
+	task := domain.Task{
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		UserID:      inp.UserID,
@@ -92,15 +93,22 @@ func (s *TaskService) GetByID(ctx context.Context, taskID, userID string) (TaskO
 	return TaskOutput(task), nil
 }
 
-func (s *TaskService) GetList(ctx context.Context, userID string) ([]TaskOutput, error) {
-	tasks, err := s.repo.GetListByUserID(ctx, userID)
+func (s *TaskService) GetList(ctx context.Context, userID string, pagination domain.PaginationQuery) (TaskListResult, error) {
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	tasks, count, err := s.repo.GetListByUserID(ctx, userID, pagination.Limit, offset)
 	if err != nil {
-		return []TaskOutput{}, err
+		return TaskListResult{}, err
 	}
 
+	totalPages := int(math.Ceil(float64(count) / float64(pagination.Limit)))
 	tasksOutput := make([]TaskOutput, len(tasks))
 	for i, task := range tasks {
 		tasksOutput[i] = TaskOutput(task)
 	}
-	return tasksOutput, nil
+	return TaskListResult{
+		Items:      tasksOutput,
+		TotalItems: count,
+		TotalPages: totalPages,
+	}, nil
 }
