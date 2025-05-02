@@ -64,7 +64,7 @@ type Task interface {
 	Update(ctx context.Context, inp UpdateTaskInput) (TaskOutput, error)
 	Delete(ctx context.Context, taskID, userID string) error
 	GetByID(ctx context.Context, taskID, userID string) (TaskOutput, error)
-	GetList(ctx context.Context, userID string, pagination domain.PaginationQuery) (TaskListResult, error)
+	GetList(ctx context.Context, userID string, query domain.GetTasksQuery) (TaskListResult, error)
 }
 
 type CreateCategoryInput struct {

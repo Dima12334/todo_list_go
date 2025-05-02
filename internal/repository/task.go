@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"strings"
+	"time"
 	"todo_list_go/internal/domain"
 	customErrors "todo_list_go/pkg/errors"
 )
@@ -114,11 +116,51 @@ func (r *TaskRepo) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *TaskRepo) GetListByUserID(ctx context.Context, userID string, limit, offset int) ([]TaskOutput, int64, error) {
+func (r *TaskRepo) GetListByUserID(ctx context.Context, userID string, query domain.GetTasksQuery) ([]TaskOutput, int64, error) {
 	tasks := make([]TaskOutput, 0)
 	var count int64
 
-	query := `
+	dbQueryArgs := []any{userID}
+	whereParts := make([]string, 0)
+	whereArgIndex := 1
+
+	whereParts = append(whereParts, fmt.Sprintf("t.user_id = $%d", whereArgIndex))
+	whereArgIndex++
+
+	if query.CreatedAtDateFrom != "" {
+		dateFrom, err := time.Parse(time.DateOnly, query.CreatedAtDateFrom)
+		if err != nil {
+			return nil, 0, err
+		}
+		whereParts = append(whereParts, fmt.Sprintf("t.created_at >= $%d", whereArgIndex))
+		dbQueryArgs = append(dbQueryArgs, dateFrom)
+		whereArgIndex++
+	}
+	if query.CreatedAtDateTo != "" {
+		dateTo, err := time.Parse(time.DateOnly, query.CreatedAtDateTo)
+		if err != nil {
+			return nil, 0, err
+		}
+		whereParts = append(whereParts, fmt.Sprintf("t.created_at <= $%d", whereArgIndex))
+		dbQueryArgs = append(dbQueryArgs, dateTo)
+		whereArgIndex++
+	}
+	if query.Completed != nil {
+		whereParts = append(whereParts, fmt.Sprintf("t.completed = $%d", whereArgIndex))
+		dbQueryArgs = append(dbQueryArgs, *query.Completed)
+		whereArgIndex++
+	}
+	if len(query.CategoryIDs) > 0 {
+		whereParts = append(whereParts, fmt.Sprintf("t.category_id = ANY($%d)", whereArgIndex))
+		dbQueryArgs = append(dbQueryArgs, pq.Array(query.CategoryIDs))
+		whereArgIndex++
+	}
+
+	whereClause := strings.Join(whereParts, " AND ")
+	limitArgIndex, offsetArgIndex := whereArgIndex, whereArgIndex+1
+	dbQueryArgs = append(dbQueryArgs, query.Limit, query.Offset)
+
+	dbQuery := fmt.Sprintf(`
 		SELECT     
 		t.id AS id,
 		t.created_at AS created_at,
@@ -134,16 +176,17 @@ func (r *TaskRepo) GetListByUserID(ctx context.Context, userID string, limit, of
 		c.color AS "category.color"
 		FROM tasks t
 		INNER JOIN categories c ON t.category_id = c.id 
-		WHERE t.user_id = $1
+		WHERE %s
 		ORDER BY t.created_at DESC
-		LIMIT $2 OFFSET $3;`
-	err := r.db.SelectContext(ctx, &tasks, query, userID, limit, offset)
+		LIMIT $%d OFFSET $%d;`, whereClause, limitArgIndex, offsetArgIndex)
+	err := r.db.SelectContext(ctx, &tasks, dbQuery, dbQueryArgs...)
 	if err != nil {
 		return tasks, 0, err
 	}
 
-	queryCount := `SELECT COUNT(*) FROM tasks WHERE user_id = $1;`
-	err = r.db.QueryRowxContext(ctx, queryCount, userID).Scan(&count)
+	dbQueryCountArgs := dbQueryArgs[:whereArgIndex-1] // exclude LIMIT and OFFSET
+	dbQueryCount := fmt.Sprintf(`SELECT COUNT(*) FROM tasks t WHERE %s;`, whereClause)
+	err = r.db.QueryRowxContext(ctx, dbQueryCount, dbQueryCountArgs...).Scan(&count)
 	if err != nil {
 		return tasks, 0, err
 	}

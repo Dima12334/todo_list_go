@@ -38,7 +38,7 @@ type TaskRepository interface {
 	Update(ctx context.Context, inp UpdateTaskInput) (TaskOutput, error)
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, taskID, userID string) (TaskOutput, error)
-	GetListByUserID(ctx context.Context, userID string, limit, offset int) ([]TaskOutput, int64, error)
+	GetListByUserID(ctx context.Context, userID string, query domain.GetTasksQuery) ([]TaskOutput, int64, error)
 }
 
 type UpdateCategoryInput struct {

@@ -65,6 +65,10 @@ func toCategoryResponse(category domain.Category) categoryResponse {
 // @Produce  json
 // @Param page query int false "page number" default(1)
 // @Param limit query int false "items per page" default(20)
+// @Param completed query bool false "completed (true/false)"
+// @Param createdAtDateFrom query string false "format: yyyy-mm-dd"
+// @Param createdAtDateTo query string false "format: yyyy-mm-dd"
+// @Param categoryIds query string false "Comma-separated list of category IDs (e.g. uuid1,uuid2)"
 // @Success 200 {array} taskResponse
 // @Failure 401 {object} errorResponse
 // @Failure 500 {object} errorResponse
@@ -77,9 +81,9 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 		return
 	}
 
-	var pagination domain.PaginationQuery
-	if err := c.BindQuery(&pagination); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err, pagination)
+	var query domain.GetTasksQuery
+	if err := c.BindQuery(&query); err != nil {
+		out := customErrors.FormatValidationErrorOutput(err, query)
 		if out != nil {
 			newErrorResponse(c, http.StatusBadRequest, out)
 			return
@@ -88,9 +92,10 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 		return
 	}
 
-	pagination.NormalizePagination()
+	query.NormalizePagination()
+	query.NormalizeFilters()
 
-	res, err := h.services.Tasks.GetList(c, userID, pagination)
+	res, err := h.services.Tasks.GetList(c, userID, query)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -110,8 +115,8 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, paginatedResponse[taskResponse]{
-		Page:       pagination.Page,
-		Limit:      pagination.Limit,
+		Page:       query.Page,
+		Limit:      query.Limit,
 		TotalPages: res.TotalPages,
 		Total:      res.TotalItems,
 		Items:      tasksList,

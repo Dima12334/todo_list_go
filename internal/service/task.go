@@ -93,13 +93,13 @@ func (s *TaskService) GetByID(ctx context.Context, taskID, userID string) (TaskO
 	return TaskOutput(task), nil
 }
 
-func (s *TaskService) GetList(ctx context.Context, userID string, pagination domain.PaginationQuery) (TaskListResult, error) {
-	tasks, count, err := s.repo.GetListByUserID(ctx, userID, pagination.Limit, pagination.Offset)
+func (s *TaskService) GetList(ctx context.Context, userID string, query domain.GetTasksQuery) (TaskListResult, error) {
+	tasks, count, err := s.repo.GetListByUserID(ctx, userID, query)
 	if err != nil {
 		return TaskListResult{}, err
 	}
 
-	totalPages := int(math.Ceil(float64(count) / float64(pagination.Limit)))
+	totalPages := int(math.Ceil(float64(count) / float64(query.Limit)))
 	tasksOutput := make([]TaskOutput, len(tasks))
 	for i, task := range tasks {
 		tasksOutput[i] = TaskOutput(task)
