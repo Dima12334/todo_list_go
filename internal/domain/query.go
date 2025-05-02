@@ -4,8 +4,9 @@ const defaultPage = 1
 const defaultLimit = 20
 
 type PaginationQuery struct {
-	Page  int `form:"page" binding:"omitempty"`
-	Limit int `form:"limit" binding:"omitempty,max=50"`
+	Page   int `form:"page" binding:"omitempty"`
+	Limit  int `form:"limit" binding:"omitempty,max=50"`
+	Offset int
 }
 
 func (p *PaginationQuery) NormalizePagination() {
@@ -15,4 +16,6 @@ func (p *PaginationQuery) NormalizePagination() {
 	if p.Limit <= 0 {
 		p.Limit = defaultLimit
 	}
+
+	p.Offset = (p.Page - 1) * p.Limit
 }

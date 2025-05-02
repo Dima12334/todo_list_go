@@ -94,9 +94,7 @@ func (s *TaskService) GetByID(ctx context.Context, taskID, userID string) (TaskO
 }
 
 func (s *TaskService) GetList(ctx context.Context, userID string, pagination domain.PaginationQuery) (TaskListResult, error) {
-	offset := (pagination.Page - 1) * pagination.Limit
-
-	tasks, count, err := s.repo.GetListByUserID(ctx, userID, pagination.Limit, offset)
+	tasks, count, err := s.repo.GetListByUserID(ctx, userID, pagination.Limit, pagination.Offset)
 	if err != nil {
 		return TaskListResult{}, err
 	}
