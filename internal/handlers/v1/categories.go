@@ -12,7 +12,7 @@ import (
 func (h *Handler) initCategoriesRoutes(api *gin.RouterGroup) {
 	categories := api.Group("/categories")
 	{
-		categories.Use(h.userIdentity)
+		categories.Use(h.UserIdentityMiddleware)
 		categories.GET("", h.GetAllCategories)
 		categories.POST("", h.CreateCategory)
 		categories.PUT("/:id", h.UpdateCategory)

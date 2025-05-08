@@ -13,7 +13,7 @@ import (
 func (h *Handler) initTasksRoutes(api *gin.RouterGroup) {
 	tasks := api.Group("/tasks")
 	{
-		tasks.Use(h.userIdentity)
+		tasks.Use(h.UserIdentityMiddleware)
 		tasks.GET("", h.GetAllTasks)
 		tasks.POST("", h.CreateTask)
 		tasks.GET("/:id", h.GetTaskById)

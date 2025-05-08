@@ -24,7 +24,7 @@ func NewHandler(services *service.Services, tokenManager auth.TokenManager) *Han
 func (h *Handler) Init() *gin.Engine {
 	router := gin.Default()
 
-	router.Use(corsMiddleware)
+	router.Use(CORSMiddleware)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

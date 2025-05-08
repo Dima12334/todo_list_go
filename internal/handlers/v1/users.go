@@ -14,7 +14,7 @@ func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	{
 		users.POST("sign-up", h.SignUp)
 		users.POST("sign-in", h.SignIn)
-		authenticated := users.Group("/", h.userIdentity)
+		authenticated := users.Group("/", h.UserIdentityMiddleware)
 		{
 			authenticated.GET("me", h.GetMe)
 		}
