@@ -19,7 +19,7 @@ var (
 	ErrNoUpdateFields        = errors.New("no fields specified for update")
 )
 
-func IsDuplicateKeyError(err error) bool {
+func IsDuplicateDBError(err error) bool {
 	var pqErr *pq.Error
 	if errors.As(err, &pqErr) {
 		return pqErr.Code == "23505" // Unique violation code

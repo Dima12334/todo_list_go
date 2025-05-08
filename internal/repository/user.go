@@ -21,7 +21,7 @@ func (r *UserRepo) Create(ctx context.Context, user domain.User) error {
 	query := "INSERT INTO users (name, email, password, created_at) values ($1, $2, $3, $4);"
 	_, err := r.db.ExecContext(ctx, query, user.Name, user.Email, user.Password, user.CreatedAt)
 	if err != nil {
-		if customErrors.IsDuplicateKeyError(err) {
+		if customErrors.IsDuplicateDBError(err) {
 			return customErrors.ErrUserAlreadyExists
 		}
 		return err

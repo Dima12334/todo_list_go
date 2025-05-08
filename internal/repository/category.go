@@ -30,7 +30,7 @@ func (r *CategoryRepo) Create(ctx context.Context, category domain.Category) (do
 	).StructScan(&createdCategory)
 
 	if err != nil {
-		if customErrors.IsDuplicateKeyError(err) {
+		if customErrors.IsDuplicateDBError(err) {
 			return domain.Category{}, customErrors.ErrCategoryAlreadyExists
 		}
 		return domain.Category{}, err
@@ -71,7 +71,7 @@ func (r *CategoryRepo) Update(ctx context.Context, inp UpdateCategoryInput) (dom
 
 	err := r.db.QueryRowxContext(ctx, query, args...).StructScan(&updatedCategory)
 	if err != nil {
-		if customErrors.IsDuplicateKeyError(err) {
+		if customErrors.IsDuplicateDBError(err) {
 			return domain.Category{}, customErrors.ErrCategoryAlreadyExists
 		}
 		return domain.Category{}, err

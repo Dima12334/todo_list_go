@@ -33,7 +33,7 @@ func (r *TaskRepo) Create(ctx context.Context, task domain.Task) (TaskOutput, er
 		ctx, query, task.CreatedAt, task.UpdatedAt, task.UserID, task.CategoryID, task.Title, task.Description, task.Completed,
 	).Scan(&createdTaskID)
 	if err != nil {
-		if customErrors.IsDuplicateKeyError(err) {
+		if customErrors.IsDuplicateDBError(err) {
 			return TaskOutput{}, customErrors.ErrTaskAlreadyExists
 		}
 		return TaskOutput{}, err
@@ -100,7 +100,7 @@ func (r *TaskRepo) Update(ctx context.Context, inp UpdateTaskInput) (TaskOutput,
 	args = append(args, inp.ID)
 	err := r.db.QueryRowxContext(ctx, query, args...).Scan(&updatedTaskID)
 	if err != nil {
-		if customErrors.IsDuplicateKeyError(err) {
+		if customErrors.IsDuplicateDBError(err) {
 			return TaskOutput{}, customErrors.ErrTaskAlreadyExists
 		}
 		return TaskOutput{}, err
