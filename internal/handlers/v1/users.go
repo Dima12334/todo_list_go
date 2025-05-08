@@ -12,11 +12,11 @@ import (
 func (h *Handler) initUsersRoutes(api *gin.RouterGroup) {
 	users := api.Group("/users")
 	{
-		users.POST("sign-up", h.signUp)
-		users.POST("sign-in", h.signIn)
+		users.POST("sign-up", h.SignUp)
+		users.POST("sign-in", h.SignIn)
 		authenticated := users.Group("/", h.userIdentity)
 		{
-			authenticated.GET("me", h.getMe)
+			authenticated.GET("me", h.GetMe)
 		}
 	}
 }
@@ -43,7 +43,7 @@ type userMeResponse struct {
 	Email     string    `json:"email"`
 }
 
-// @Summary SignUp
+// SignUp @Summary SignUp
 // @Tags users
 // @Description create user
 // @ModuleID createUser
@@ -56,7 +56,7 @@ type userMeResponse struct {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /users/sign-up [post]
-func (h *Handler) signUp(c *gin.Context) {
+func (h *Handler) SignUp(c *gin.Context) {
 	var inp signUpUserInput
 
 	if err := c.BindJSON(&inp); err != nil {
@@ -83,7 +83,7 @@ func (h *Handler) signUp(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-// @Summary SignIn
+// SignIn @Summary SignIn
 // @Tags users
 // @Description login user
 // @ModuleID loginUser
@@ -95,7 +95,7 @@ func (h *Handler) signUp(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /users/sign-in [post]
-func (h *Handler) signIn(c *gin.Context) {
+func (h *Handler) SignIn(c *gin.Context) {
 	var inp signInUserInput
 	if err := c.BindJSON(&inp); err != nil {
 		out := customErrors.FormatValidationErrorOutput(err, inp)
@@ -122,7 +122,7 @@ func (h *Handler) signIn(c *gin.Context) {
 	c.JSON(http.StatusOK, tokenResponse{accessToken})
 }
 
-// @Summary Get me
+// GetMe @Summary Get me
 // @Security ApiKeyAuth
 // @Tags users
 // @Description get current user
@@ -134,7 +134,7 @@ func (h *Handler) signIn(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /users/me [get]
-func (h *Handler) getMe(c *gin.Context) {
+func (h *Handler) GetMe(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())

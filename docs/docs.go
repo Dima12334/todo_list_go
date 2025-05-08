@@ -32,7 +32,6 @@ const docTemplate = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Get Categories",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -79,7 +78,6 @@ const docTemplate = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Create Category",
                 "parameters": [
                     {
                         "description": "category info",
@@ -145,7 +143,6 @@ const docTemplate = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Update Category",
                 "parameters": [
                     {
                         "type": "string",
@@ -225,7 +222,6 @@ const docTemplate = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Delete Category",
                 "parameters": [
                     {
                         "type": "string",
@@ -277,7 +273,6 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Get Tasks",
                 "parameters": [
                     {
                         "type": "integer",
@@ -364,7 +359,6 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Create Task",
                 "parameters": [
                     {
                         "description": "task info",
@@ -433,7 +427,6 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Get Task",
                 "parameters": [
                     {
                         "type": "string",
@@ -483,7 +476,6 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Update Task",
                 "parameters": [
                     {
                         "type": "string",
@@ -563,7 +555,6 @@ const docTemplate = `{
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Delete Task",
                 "parameters": [
                     {
                         "type": "string",
@@ -621,7 +612,6 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get me",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -668,7 +658,6 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "SignIn",
                 "parameters": [
                     {
                         "description": "user credentials",
@@ -720,7 +709,6 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "SignUp",
                 "parameters": [
                     {
                         "description": "user info",

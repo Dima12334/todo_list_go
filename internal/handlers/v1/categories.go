@@ -13,10 +13,10 @@ func (h *Handler) initCategoriesRoutes(api *gin.RouterGroup) {
 	categories := api.Group("/categories")
 	{
 		categories.Use(h.userIdentity)
-		categories.GET("", h.getAllCategories)
-		categories.POST("", h.createCategory)
-		categories.PUT("/:id", h.updateCategory)
-		categories.DELETE("/:id", h.deleteCategory)
+		categories.GET("", h.GetAllCategories)
+		categories.POST("", h.CreateCategory)
+		categories.PUT("/:id", h.UpdateCategory)
+		categories.DELETE("/:id", h.DeleteCategory)
 	}
 }
 
@@ -40,7 +40,7 @@ type categoryResponse struct {
 	Color       string    `json:"color"`
 }
 
-// @Summary Get Categories
+// GetAllCategories @Summary Get Categories
 // @Security ApiKeyAuth
 // @Tags categories
 // @Description get categories
@@ -52,7 +52,7 @@ type categoryResponse struct {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /categories [get]
-func (h *Handler) getAllCategories(c *gin.Context) {
+func (h *Handler) GetAllCategories(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -79,7 +79,7 @@ func (h *Handler) getAllCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, categoriesList)
 }
 
-// @Summary Create Category
+// CreateCategory @Summary Create Category
 // @Security ApiKeyAuth
 // @Tags categories
 // @Description create category
@@ -92,7 +92,7 @@ func (h *Handler) getAllCategories(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /categories [post]
-func (h *Handler) createCategory(c *gin.Context) {
+func (h *Handler) CreateCategory(c *gin.Context) {
 	var inp createCategoryInput
 
 	if err := c.BindJSON(&inp); err != nil {
@@ -139,7 +139,7 @@ func (h *Handler) createCategory(c *gin.Context) {
 	})
 }
 
-// @Summary Update Category
+// UpdateCategory @Summary Update Category
 // @Security ApiKeyAuth
 // @Tags categories
 // @Description update category
@@ -152,7 +152,7 @@ func (h *Handler) createCategory(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /categories/{id} [put]
-func (h *Handler) updateCategory(c *gin.Context) {
+func (h *Handler) UpdateCategory(c *gin.Context) {
 	categoryID := c.Param("id")
 	userID, err := getUserID(c)
 	if err != nil {
@@ -204,7 +204,7 @@ func (h *Handler) updateCategory(c *gin.Context) {
 	})
 }
 
-// @Summary Delete Category
+// DeleteCategory @Summary Delete Category
 // @Security ApiKeyAuth
 // @Tags categories
 // @Description delete category
@@ -217,7 +217,7 @@ func (h *Handler) updateCategory(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /categories/{id} [delete]
-func (h *Handler) deleteCategory(c *gin.Context) {
+func (h *Handler) DeleteCategory(c *gin.Context) {
 	categoryID := c.Param("id")
 	userID, err := getUserID(c)
 	if err != nil {

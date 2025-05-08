@@ -202,7 +202,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Get Categories
       tags:
       - categories
     post:
@@ -245,7 +244,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Create Category
       tags:
       - categories
   /categories/{id}:
@@ -278,7 +276,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Delete Category
       tags:
       - categories
     put:
@@ -328,7 +325,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Update Category
       tags:
       - categories
   /tasks:
@@ -386,7 +382,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Get Tasks
       tags:
       - tasks
     post:
@@ -429,7 +424,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Create Task
       tags:
       - tasks
   /tasks/{id}:
@@ -466,7 +460,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Delete Task
       tags:
       - tasks
     get:
@@ -500,7 +493,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Get Task
       tags:
       - tasks
     put:
@@ -550,7 +542,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Update Task
       tags:
       - tasks
   /users/me:
@@ -583,7 +574,6 @@ paths:
             $ref: '#/definitions/v1.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Get me
       tags:
       - users
   /users/sign-in:
@@ -617,7 +607,6 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/v1.errorResponse'
-      summary: SignIn
       tags:
       - users
   /users/sign-up:
@@ -653,7 +642,6 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/v1.errorResponse'
-      summary: SignUp
       tags:
       - users
 securityDefinitions:

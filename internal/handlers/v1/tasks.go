@@ -14,11 +14,11 @@ func (h *Handler) initTasksRoutes(api *gin.RouterGroup) {
 	tasks := api.Group("/tasks")
 	{
 		tasks.Use(h.userIdentity)
-		tasks.GET("", h.getAllTasks)
-		tasks.POST("", h.createTask)
-		tasks.GET("/:id", h.getTaskById)
-		tasks.PUT("/:id", h.updateTask)
-		tasks.DELETE("/:id", h.deleteTask)
+		tasks.GET("", h.GetAllTasks)
+		tasks.POST("", h.CreateTask)
+		tasks.GET("/:id", h.GetTaskById)
+		tasks.PUT("/:id", h.UpdateTask)
+		tasks.DELETE("/:id", h.DeleteTask)
 	}
 }
 
@@ -56,7 +56,7 @@ func toCategoryResponse(category domain.Category) categoryResponse {
 	}
 }
 
-// @Summary Get Tasks
+// GetAllTasks @Summary Get Tasks
 // @Security ApiKeyAuth
 // @Tags tasks
 // @Description get tasks
@@ -74,7 +74,7 @@ func toCategoryResponse(category domain.Category) categoryResponse {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /tasks [get]
-func (h *Handler) getAllTasks(c *gin.Context) {
+func (h *Handler) GetAllTasks(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -123,7 +123,7 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 	})
 }
 
-// @Summary Create Task
+// CreateTask @Summary Create Task
 // @Security ApiKeyAuth
 // @Tags tasks
 // @Description create task
@@ -136,7 +136,7 @@ func (h *Handler) getAllTasks(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /tasks [post]
-func (h *Handler) createTask(c *gin.Context) {
+func (h *Handler) CreateTask(c *gin.Context) {
 	userID, err := getUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -188,7 +188,7 @@ func (h *Handler) createTask(c *gin.Context) {
 	)
 }
 
-// @Summary Get Task
+// GetTaskById @Summary Get Task
 // @Security ApiKeyAuth
 // @Tags tasks
 // @Description get task
@@ -201,7 +201,7 @@ func (h *Handler) createTask(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /tasks/{id} [get]
-func (h *Handler) getTaskById(c *gin.Context) {
+func (h *Handler) GetTaskById(c *gin.Context) {
 	taskId := c.Param("id")
 	userID, err := getUserID(c)
 	if err != nil {
@@ -232,7 +232,7 @@ func (h *Handler) getTaskById(c *gin.Context) {
 	)
 }
 
-// @Summary Update Task
+// UpdateTask @Summary Update Task
 // @Security ApiKeyAuth
 // @Tags tasks
 // @Description update task
@@ -245,7 +245,7 @@ func (h *Handler) getTaskById(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /tasks/{id} [put]
-func (h *Handler) updateTask(c *gin.Context) {
+func (h *Handler) UpdateTask(c *gin.Context) {
 	taskID := c.Param("id")
 	userID, err := getUserID(c)
 	if err != nil {
@@ -305,7 +305,7 @@ func (h *Handler) updateTask(c *gin.Context) {
 
 }
 
-// @Summary Delete Task
+// DeleteTask @Summary Delete Task
 // @Security ApiKeyAuth
 // @Tags tasks
 // @Description delete task
@@ -318,7 +318,7 @@ func (h *Handler) updateTask(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /tasks/{id} [delete]
-func (h *Handler) deleteTask(c *gin.Context) {
+func (h *Handler) DeleteTask(c *gin.Context) {
 	taskID := c.Param("id")
 	userID, err := getUserID(c)
 	if err != nil {

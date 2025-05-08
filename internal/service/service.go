@@ -9,6 +9,8 @@ import (
 	"todo_list_go/pkg/hash"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock_service.go
+
 type SignUpUserInput struct {
 	Name     string
 	Email    string

@@ -26,7 +26,6 @@
                 "tags": [
                     "categories"
                 ],
-                "summary": "Get Categories",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -73,7 +72,6 @@
                 "tags": [
                     "categories"
                 ],
-                "summary": "Create Category",
                 "parameters": [
                     {
                         "description": "category info",
@@ -139,7 +137,6 @@
                 "tags": [
                     "categories"
                 ],
-                "summary": "Update Category",
                 "parameters": [
                     {
                         "type": "string",
@@ -219,7 +216,6 @@
                 "tags": [
                     "categories"
                 ],
-                "summary": "Delete Category",
                 "parameters": [
                     {
                         "type": "string",
@@ -271,7 +267,6 @@
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Get Tasks",
                 "parameters": [
                     {
                         "type": "integer",
@@ -358,7 +353,6 @@
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Create Task",
                 "parameters": [
                     {
                         "description": "task info",
@@ -427,7 +421,6 @@
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Get Task",
                 "parameters": [
                     {
                         "type": "string",
@@ -477,7 +470,6 @@
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Update Task",
                 "parameters": [
                     {
                         "type": "string",
@@ -557,7 +549,6 @@
                 "tags": [
                     "tasks"
                 ],
-                "summary": "Delete Task",
                 "parameters": [
                     {
                         "type": "string",
@@ -615,7 +606,6 @@
                 "tags": [
                     "users"
                 ],
-                "summary": "Get me",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -662,7 +652,6 @@
                 "tags": [
                     "users"
                 ],
-                "summary": "SignIn",
                 "parameters": [
                     {
                         "description": "user credentials",
@@ -714,7 +703,6 @@
                 "tags": [
                     "users"
                 ],
-                "summary": "SignUp",
                 "parameters": [
                     {
                         "description": "user info",
