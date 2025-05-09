@@ -75,7 +75,7 @@ func toCategoryResponse(category domain.Category) categoryResponse {
 // @Failure default {object} errorResponse
 // @Router /tasks [get]
 func (h *Handler) GetAllTasks(c *gin.Context) {
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -137,7 +137,7 @@ func (h *Handler) GetAllTasks(c *gin.Context) {
 // @Failure default {object} errorResponse
 // @Router /tasks [post]
 func (h *Handler) CreateTask(c *gin.Context) {
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -203,7 +203,7 @@ func (h *Handler) CreateTask(c *gin.Context) {
 // @Router /tasks/{id} [get]
 func (h *Handler) GetTaskById(c *gin.Context) {
 	taskId := c.Param("id")
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -247,7 +247,7 @@ func (h *Handler) GetTaskById(c *gin.Context) {
 // @Router /tasks/{id} [put]
 func (h *Handler) UpdateTask(c *gin.Context) {
 	taskID := c.Param("id")
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -320,7 +320,7 @@ func (h *Handler) UpdateTask(c *gin.Context) {
 // @Router /tasks/{id} [delete]
 func (h *Handler) DeleteTask(c *gin.Context) {
 	taskID := c.Param("id")
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

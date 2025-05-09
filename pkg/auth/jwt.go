@@ -8,6 +8,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+//go:generate mockgen -source=jwt.go -destination=mocks/mock_jwt.go
+
 type TokenManager interface {
 	NewJWT(userID string, ttl time.Duration) (string, error)
 	ParseJWT(accessToken string) (string, error)
@@ -51,7 +53,7 @@ func (m *Manager) ParseJWT(accessToken string) (string, error) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", fmt.Errorf("error get user claims from token")
+		return "", errors.New("error get user claims from token")
 	}
 
 	return claims["sub"].(string), nil

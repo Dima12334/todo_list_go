@@ -7,6 +7,8 @@ import (
 	"todo_list_go/internal/domain"
 )
 
+//go:generate mockgen -source=repository.go -destination=mocks/mock_repository.go
+
 type UserRepository interface {
 	Create(ctx context.Context, user domain.User) error
 	GetByID(ctx context.Context, id string) (domain.User, error)

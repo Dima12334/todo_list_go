@@ -9,3 +9,6 @@ migrate-down:
 
 swag:
 	swag init -g internal/app/app.go
+
+test:
+	go test -v ./...

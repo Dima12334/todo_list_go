@@ -53,7 +53,7 @@ type categoryResponse struct {
 // @Failure default {object} errorResponse
 // @Router /categories [get]
 func (h *Handler) GetAllCategories(c *gin.Context) {
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -106,7 +106,7 @@ func (h *Handler) CreateCategory(c *gin.Context) {
 		return
 	}
 
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -154,7 +154,7 @@ func (h *Handler) CreateCategory(c *gin.Context) {
 // @Router /categories/{id} [put]
 func (h *Handler) UpdateCategory(c *gin.Context) {
 	categoryID := c.Param("id")
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -219,7 +219,7 @@ func (h *Handler) UpdateCategory(c *gin.Context) {
 // @Router /categories/{id} [delete]
 func (h *Handler) DeleteCategory(c *gin.Context) {
 	categoryID := c.Param("id")
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

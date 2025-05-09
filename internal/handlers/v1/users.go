@@ -135,7 +135,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 // @Failure default {object} errorResponse
 // @Router /users/me [get]
 func (h *Handler) GetMe(c *gin.Context) {
-	userID, err := getUserID(c)
+	userID, err := GetUserID(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

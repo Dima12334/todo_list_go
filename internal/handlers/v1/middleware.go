@@ -15,7 +15,7 @@ const (
 	idParamCtx          = "id"
 )
 
-func getUserID(c *gin.Context) (string, error) {
+func GetUserID(c *gin.Context) (string, error) {
 	userID, ok := c.Get(userCtx)
 	if !ok {
 		return "", errors.New("user id not found")
