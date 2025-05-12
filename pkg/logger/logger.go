@@ -1,13 +1,26 @@
 package logger
 
-import "go.uber.org/zap"
+import (
+	"go.uber.org/zap"
+	"todo_list_go/internal/config"
+)
 
-func Init() error {
-	config := zap.NewDevelopmentConfig()
+const (
+	prodLogEnv = "prod"
+)
 
-	config.DisableStacktrace = true
+func Init(loggerCfg config.LoggerConfig) error {
+	var cfg zap.Config
 
-	baseLogger, err := config.Build()
+	if loggerCfg.LoggerEnv == prodLogEnv {
+		cfg = zap.NewProductionConfig()
+	} else {
+		cfg = zap.NewDevelopmentConfig()
+	}
+
+	cfg.DisableStacktrace = true
+
+	baseLogger, err := cfg.Build()
 	if err != nil {
 		return err
 	}

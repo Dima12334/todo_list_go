@@ -17,14 +17,19 @@ const (
 
 type (
 	Config struct {
-		HTTP HTTPConfig
-		DB   DatabaseConfig
-		Auth AuthConfig
+		HTTP   HTTPConfig
+		Logger LoggerConfig
+		DB     DatabaseConfig
+		Auth   AuthConfig
 	}
 
 	HTTPConfig struct {
 		Host string `mapstructure:"host"`
 		Port string `mapstructure:"port"`
+	}
+
+	LoggerConfig struct {
+		LoggerEnv string
 	}
 
 	DatabaseConfig struct {
@@ -104,6 +109,8 @@ func setFormEnv(cfg *Config) {
 	if err != nil {
 		log.Fatalf("error loading .env file")
 	}
+
+	cfg.Logger.LoggerEnv = os.Getenv("LOGG_ENV")
 
 	cfg.DB.Host = os.Getenv("DB_HOST")
 	cfg.DB.Port = os.Getenv("DB_PORT")

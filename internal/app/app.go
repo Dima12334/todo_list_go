@@ -33,14 +33,14 @@ import (
 
 // Run initializes the whole application.
 func Run(configDir string) {
-	if err := logger.Init(); err != nil {
-		log.Fatalf("failed to initialize logger: %v", err)
-	}
-
 	cfg, err := config.Init(configDir)
 	if err != nil {
-		logger.Errorf("failed to init configs: %v", err.Error())
+		log.Fatalf("failed to init configs: %v", err.Error())
 		return
+	}
+
+	if err := logger.Init(cfg.Logger); err != nil {
+		log.Fatalf("failed to initialize logger: %v", err)
 	}
 
 	dbConn, err := db.ConnectDB(cfg.DB)
