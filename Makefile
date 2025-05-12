@@ -1,14 +1,23 @@
-migration:
-	@migrate create -ext sql -dir ./migrations -seq $(filter-out $@,$(MAKECMDGOALS))
+up:
+	docker-compose up
 
-migrate-up:
-	@go run cmd/migrate/main.go up
+up-with-build:
+	docker-compose up --build
 
-migrate-down:
-	@go run cmd/migrate/main.go down
-
-swag:
-	swag init -g internal/app/app.go
+down:
+	docker-compose down
 
 test:
-	go test -v ./...
+	docker-compose exec app go test -v ./...
+
+migration:
+	@docker-compose exec app migrate create -ext sql -dir ./migrations -seq $(filter-out $@,$(MAKECMDGOALS))
+
+migrate-up:
+	@docker-compose exec app go run cmd/migrate/main.go up
+
+migrate-down:
+	@docker-compose exec app go run cmd/migrate/main.go down
+
+swag:
+	docker-compose exec app swag init -g internal/app/app.go
