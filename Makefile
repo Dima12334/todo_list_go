@@ -20,4 +20,4 @@ migrate-down:
 	@docker-compose exec app go run cmd/migrate/main.go down
 
 swag:
-	docker-compose exec app swag init -g internal/app/app.go
+	swag init -g internal/app/app.go
