@@ -8,10 +8,10 @@ down:
 	docker-compose down
 
 test:
-	docker-compose exec app go test -v ./...
+	go test -v ./...
 
 migration:
-	@docker-compose exec app migrate create -ext sql -dir ./migrations -seq $(filter-out $@,$(MAKECMDGOALS))
+	@migrate create -ext sql -dir ./migrations -seq $(filter-out $@,$(MAKECMDGOALS))
 
 migrate-up:
 	@docker-compose exec app go run cmd/migrate/main.go up
