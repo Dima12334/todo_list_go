@@ -59,14 +59,9 @@ type userMeResponse struct {
 func (h *Handler) SignUp(c *gin.Context) {
 	var inp signUpUserInput
 
-	if err := c.BindJSON(&inp); err != nil {
-		out := customErrors.FormatValidationErrorOutput(err, inp)
-		if out != nil {
-			newErrorResponse(c, http.StatusBadRequest, out)
-			return
-		}
-
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+	ok, err := BindAndValidateJSON(c, &inp)
+	if !ok && err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
